@@ -1,0 +1,132 @@
+/* Design tokens. One place to change spacing, colour and type, so eight blocks
+   stay consistent without a framework.
+
+   The look is deliberately plain: dense, quiet, and readable. This is an
+   operations tool, so the numbers should carry the page and the chrome around
+   them should be almost invisible. */
+:root {
+  /* Warm neutrals rather than blue-grey. Pure grey reads as a default nobody
+     chose; a hint of warmth reads as considered, at no cost in legibility. */
+  --bg: #f5f4f2;
+  --surface: #ffffff;
+  --surface-sunk: #faf9f7;
+  --border: #e5e3df;
+  --border-strong: #d6d3cd;
+
+  --ink: #1b1a18;
+  --ink-soft: #5f5c56;
+  --ink-faint: #93908a;
+
+  /* One accent. Everything else is neutral, so anything coloured is a signal. */
+  --accent: #2f56c8;
+  --accent-soft: #eef1fb;
+  --late: #b8433a;
+  --late-soft: #fbeeed;
+  --ontime: #2a7f5f;
+  --ontime-soft: #ecf5f1;
+  --warn: #a8722a;
+  --warn-soft: #fbf4e9;
+
+  --leg-approval: #c3bfb8;
+  --leg-seller: #c98a30;
+  --leg-carrier: #2f56c8;
+
+  /* A 4px rhythm. Every margin and pad below is a multiple. */
+  --s1: 4px;
+  --s2: 8px;
+  --s3: 12px;
+  --s4: 16px;
+  --s5: 24px;
+  --s6: 32px;
+  --s7: 48px;
+
+  --radius: 10px;
+
+  color-scheme: light;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Inter, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 600;
+  letter-spacing: -0.011em;
+}
+
+p {
+  margin: 0;
+}
+
+/* Every figure on the page is tabular, so columns of numbers line up and a
+   value does not jitter when it changes. */
+.num,
+.value,
+.figure {
+  font-variant-numeric: tabular-nums;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 13px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: var(--s2) var(--s3);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+thead th {
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 1;
+  color: var(--ink-faint);
+  font-weight: 500;
+  font-size: 12px;
+  border-bottom-color: var(--border-strong);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:hover td {
+  background: var(--surface-sunk);
+}
+
+td.num,
+th.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+a {
+  color: var(--ink-soft);
+  text-underline-offset: 2px;
+}

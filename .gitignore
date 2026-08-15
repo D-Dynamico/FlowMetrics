@@ -7,6 +7,9 @@
 data/raw/*
 !data/raw/.gitkeep
 
+node_modules/
+frontend/dist/
+
 __pycache__/
 *.py[cod]
 .venv/

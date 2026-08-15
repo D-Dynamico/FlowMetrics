@@ -1,0 +1,406 @@
+.page {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--s7) var(--s5) 96px;
+}
+
+/* Masthead ---------------------------------------------------------------- */
+
+.masthead {
+  padding-bottom: var(--s5);
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.masthead h1 {
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+
+.masthead p {
+  margin-top: var(--s2);
+  color: var(--ink-soft);
+  max-width: 66ch;
+}
+
+/* Panels ------------------------------------------------------------------
+   A hairline border and no shadow. Border plus shadow plus a tinted background
+   is three ways of saying the same thing, and it is what makes a plain layout
+   look cluttered rather than calm. */
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--s5);
+  margin-top: var(--s4);
+}
+
+/* The root cause panel is the centrepiece, so it is the one thing on the page
+   allowed to look heavier than everything else. */
+.panel.feature {
+  border-color: var(--border-strong);
+  border-top: 2px solid var(--accent);
+  padding: var(--s6) var(--s5) var(--s5);
+}
+
+.panel > header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s3);
+  margin-bottom: var(--s4);
+  flex-wrap: wrap;
+}
+
+/* Sentence case, not uppercase. Four levels of letterspaced capitals across a
+   page turns every label into texture and none of them get read. */
+.panel h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.panel .note {
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+.subhead {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-faint);
+  margin-bottom: var(--s2);
+}
+
+/* KPI row ----------------------------------------------------------------- */
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 0;
+  margin-top: var(--s5);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+/* One card divided by rules rather than four floating boxes: these are four
+   readings of the same population, not four separate things. */
+.kpi {
+  padding: var(--s5);
+  border-right: 1px solid var(--border);
+}
+
+.kpi:last-child {
+  border-right: none;
+}
+
+.kpi .label {
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+.kpi .value {
+  font-size: 29px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+  margin-top: var(--s2);
+}
+
+.kpi .value small {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  letter-spacing: 0;
+  margin-left: 3px;
+}
+
+.kpi .sub {
+  margin-top: var(--s3);
+  padding-top: var(--s3);
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--ink-faint);
+  display: flex;
+  gap: var(--s4);
+  flex-wrap: wrap;
+}
+
+.kpi .sub b {
+  color: var(--ink-soft);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Toggle ------------------------------------------------------------------ */
+
+.toggle {
+  display: flex;
+  gap: var(--s1);
+  margin-top: var(--s4);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.toggle button {
+  border: 1px solid var(--border-strong);
+  background: var(--surface);
+  border-radius: 7px;
+  padding: 7px 14px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+
+.toggle button:hover {
+  border-color: var(--ink-faint);
+  color: var(--ink);
+}
+
+.toggle button[aria-pressed='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--surface);
+  font-weight: 500;
+}
+
+.toggle .hint {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--ink-faint);
+}
+
+/* RCA --------------------------------------------------------------------- */
+
+.headline {
+  font-size: 20px;
+  line-height: 1.5;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  max-width: 74ch;
+}
+
+.segment-note {
+  margin-top: var(--s3);
+  color: var(--ink-soft);
+  max-width: 74ch;
+}
+
+.caveat {
+  margin-top: var(--s5);
+  background: var(--warn-soft);
+  border: 1px solid #efe2cd;
+  padding: var(--s3) var(--s4);
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #6b4f22;
+  max-width: 88ch;
+}
+
+.caveat b {
+  display: block;
+  margin-bottom: var(--s1);
+  font-size: 12px;
+  color: #8a6526;
+}
+
+.leg-bar {
+  display: flex;
+  height: 30px;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-top: var(--s2);
+}
+
+.leg-bar span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  min-width: 0;
+}
+
+.legend {
+  display: flex;
+  gap: var(--s4);
+  margin-top: var(--s2);
+  font-size: 12px;
+  color: var(--ink-faint);
+  flex-wrap: wrap;
+}
+
+.legend i {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  margin-right: 6px;
+}
+
+.block {
+  margin-top: var(--s5);
+}
+
+.split {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--s5);
+  margin-top: var(--s5);
+}
+
+/* The two-letter code kept beside the full name: the name is what a reader
+   understands, the code is what the source data and every ranking key use. */
+.code {
+  font-size: 11px;
+  color: var(--ink-faint);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.lift-over {
+  color: var(--late);
+  font-weight: 600;
+}
+
+.lift-under {
+  color: var(--ink-faint);
+}
+
+/* Stated figures ---------------------------------------------------------- */
+
+.figure {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 1.25;
+}
+
+.figure small {
+  display: block;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink-soft);
+  letter-spacing: 0;
+  line-height: 1.6;
+  margin-top: var(--s2);
+  max-width: 56ch;
+}
+
+/* Tables and filters ------------------------------------------------------ */
+
+.scroll {
+  overflow: auto;
+  max-height: 400px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.filters {
+  display: flex;
+  gap: var(--s2);
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: var(--s3);
+}
+
+.filters select,
+.filters button.page {
+  font: inherit;
+  font-size: 13px;
+  padding: 5px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--ink-soft);
+}
+
+.filters button.page:hover:not(:disabled) {
+  border-color: var(--ink-faint);
+  color: var(--ink);
+}
+
+.filters button.page:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.filters button.page[aria-pressed='true'] {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+  font-weight: 500;
+}
+
+/* Charts need an explicit height on the wrapper, or ResponsiveContainer
+   resolves to zero and the panel renders empty. */
+.chart {
+  height: 200px;
+  margin-top: var(--s2);
+}
+
+.chart.tall {
+  height: 240px;
+}
+
+/* States ------------------------------------------------------------------ */
+
+.state {
+  padding: var(--s5);
+  color: var(--ink-faint);
+  font-size: 13px;
+}
+
+.state.error {
+  color: var(--late);
+}
+
+.pill {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.pill.late {
+  background: var(--late-soft);
+  color: var(--late);
+}
+
+.pill.ontime {
+  background: var(--ontime-soft);
+  color: var(--ontime);
+}
+
+/* Footer ------------------------------------------------------------------ */
+
+.footer {
+  margin-top: var(--s6);
+  padding-top: var(--s4);
+  border-top: 1px solid var(--border-strong);
+  font-size: 12px;
+  color: var(--ink-faint);
+  line-height: 1.75;
+  max-width: 92ch;
+}
+
+@media (max-width: 720px) {
+  .page {
+    padding: var(--s5) var(--s4) var(--s7);
+  }
+
+  .kpi {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .headline {
+    font-size: 18px;
+  }
+}
