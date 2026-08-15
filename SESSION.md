@@ -97,6 +97,36 @@ orders and the top decile accounts for 49.7%. That is a scoped management action
 rather than a floor process problem. The floor matters — without it the ranking
 fills with three-order sellers at a 100% miss rate.
 
+### Concentration is reported as lift, not raw share
+
+The first RCA run said "55% of misses concentrate in RJ, SP and MG", which mostly
+restated where the orders are: SP alone holds most of the volume, so that
+sentence would have been true of any outcome. Each group's miss share is now
+reported against its order share with the ratio. Southeast sits at 0.85x while
+Northeast sits at 2.05x, which is an actual finding.
+
+### Headline names overweighted states, not the largest ones
+
+`_headline()` ranks by lift with a 30-order floor, so it surfaces AL at 3.4x,
+MA at 2.8x and CE at 2.3x rather than the three biggest states. All three are
+Northeast. RJ is the one that appears on both lists: 12,015 orders at 1.84x,
+which is why it also tops the absolute-loss lane ranking as SP-RJ.
+
+### Category floor raised to 200 orders
+
+At the 30-order lane floor the best and worst categories in the network were
+decided by 36 and 48 orders. `MIN_ORDERS_PER_CATEGORY` is now 200, which ranks
+42 of 71 categories and gives audio at 0.867 against air conditioning at 0.958.
+A 9-point spread across categories is a weak driver, and reporting it as weak is
+the honest result.
+
+### The two segments fail differently, and the split shows it
+
+Interstate puts 89% of misses on the carrier leg; intrastate puts 61% there and
+33% on the seller leg. Same operation, structurally different failure: when
+transit is short there is nothing to absorb a slow handover, so the seller
+surfaces. This is what the order type toggle exists to show.
+
 ### Raw CSVs are gitignored, cleaned parquet is committed
 
 `data/raw/` is ignored for Kaggle licensing and size; `data/orders_clean.parquet`
