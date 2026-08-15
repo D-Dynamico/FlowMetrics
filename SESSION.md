@@ -171,6 +171,54 @@ encoder rejects. `_json_safe()` handles the conversion in `api/main.py` rather
 than in the analysis functions, so the analysis layer stays free of
 serialisation concerns and keeps returning natural pandas output.
 
+### Order type state lives in App and is passed down
+
+The toggle was built before any panel that reads it, so no component owns its own
+copy and none had to be retrofitted later. Every block takes `orderType` as a
+prop and refetches, which is what makes switching it show the two segments
+failing differently rather than just filtering a table.
+
+### FastAPI serves the built dashboard, mounted last
+
+`mount_frontend()` is called after every route is declared so the static mount
+cannot shadow `/api/`. If `frontend/dist` is absent the API still runs, which
+keeps a fresh clone and the test suite working before anyone runs `npm run
+build`. One command starts the whole app.
+
+### Concentration renders as a lift table, not a map
+
+The RCA panel shows each state's share of late orders beside its share of all
+orders and the ratio. A map or a plain ranked list would have shown Sao Paulo
+largest and taught the reader nothing, since it is largest at everything. The
+ratio column is the part that carries the finding.
+
+### Seller endpoint trimmed to the worst 50
+
+`/api/sellers` returned all 777 eligible sellers at 141 kB. Nobody scrolls that,
+and the finding is the Pareto figure plus the tail worth a phone call. Now 10 kB,
+with `sellers_above_floor` reported so the reader knows what is being left out.
+
+### Dashboard not yet verified in a browser
+
+Every URL the components request returns 200 and the response shapes match what
+the code reads, but the Chrome extension was not connected, so nothing has been
+confirmed visually. Screenshots and a real render check are still outstanding.
+
+### State codes replaced with full names everywhere
+
+`SP-RJ` means nothing to a reader who is not Brazilian, which is most of the
+audience. `config.STATE_NAMES` is served through `/api/meta`, so the generated
+headline now reads "Alagoas (3.4x)" and routes read "São Paulo → Rio de Janeiro".
+Codes stay in the data and in every ranking key; only the label changed. The two
+state dropdowns are now built from the API rather than a hardcoded list of 12.
+
+### Clean-clone test caught a broken run instruction
+
+Cloning to a temp directory showed `pytest` failing on a fresh clone: the
+reconciliation test rebuilds from the raw CSVs, which are deliberately not
+committed. It now skips with a message naming what is missing. 27 pass on a
+clone, 28 with the CSVs present, and the README states both.
+
 ### Raw CSVs are gitignored, cleaned parquet is committed
 
 `data/raw/` is ignored for Kaggle licensing and size; `data/orders_clean.parquet`
