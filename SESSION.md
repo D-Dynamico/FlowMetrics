@@ -127,6 +127,29 @@ Interstate puts 89% of misses on the carrier leg; intrastate puts 61% there and
 transit is short there is nothing to absorb a slow handover, so the seller
 surfaces. This is what the order type toggle exists to show.
 
+### Tests assert properties, with one deliberate exception
+
+28 tests across cleaning and analysis. They check invariants rather than today's
+numbers, because a test that breaks when a cleaning rule is retuned is testing
+the data rather than the code. The exception is the row-count reconciliation,
+which exists precisely to fail when the pipeline starts losing rows nobody
+counted.
+
+### Two tests worth more than the rest
+
+`test_the_two_slas_are_independent` requires all four combinations of the two
+SLAs to occur; if one cell were empty the flags would be measuring the same thing
+under two names, and the "seller breached but the customer was still on time"
+finding would be an artefact. `test_lane_rankings_answer_different_questions`
+requires the two lane rankings to disagree, or reporting both is padding.
+
+### Legs must reconcile against the total journey
+
+`test_legs_sum_to_total_tat` checks the three legs add up to total TAT within a
+hundredth of an hour. A mis-wired leg boundary would otherwise produce a
+plausible-looking breakdown that does not line up with the clock, which is the
+kind of error that survives review because every individual number looks fine.
+
 ### Raw CSVs are gitignored, cleaned parquet is committed
 
 `data/raw/` is ignored for Kaggle licensing and size; `data/orders_clean.parquet`
