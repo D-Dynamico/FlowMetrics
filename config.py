@@ -119,6 +119,11 @@ DISTANCE_BANDS_KM = (
 MIN_ORDERS_PER_LANE = 30
 MIN_ORDERS_PER_SELLER = 20
 
+# Categories need a higher floor than lanes. Olist has 71 categories with a very
+# long tail, and at a floor of 30 the best and worst category in the network are
+# both decided by fewer than fifty orders, which is noise presented as a finding.
+MIN_ORDERS_PER_CATEGORY = 200
+
 # Share of misses a Pareto cut reports against.
 PARETO_THRESHOLDS = (0.5, 0.8)
 
