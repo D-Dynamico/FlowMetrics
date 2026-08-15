@@ -1,0 +1,15 @@
+# Olist raw CSVs. The dataset is public and CC BY-NC-SA 4.0 permits
+# redistribution, so this is not a privacy or permission issue. Two reasons to
+# keep them out: 121 MB total (geolocation alone is 61 MB) that nothing reads at
+# runtime, and CC BY-NC-SA is incompatible with this repo's Apache 2.0 licence.
+# The committed `data/orders_clean.parquet` is what the app loads, `data/clean.py`
+# regenerates it from these CSVs, and the README documents the download step.
+data/raw/*
+!data/raw/.gitkeep
+
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ipynb_checkpoints/
