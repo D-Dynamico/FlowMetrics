@@ -8,7 +8,10 @@ dropping rows without recording them.
 
 from __future__ import annotations
 
+import os
+
 import pandas as pd
+import pytest
 
 import config as cfg
 
@@ -104,7 +107,24 @@ def test_cleaning_report_reconciles():
     This is the one test allowed to depend on the current data, because its whole
     purpose is to fail if the pipeline starts losing rows nobody counted. An
     exclusion nobody can see is a hole in the analysis.
+
+    Skipped when the raw CSVs are absent. They are deliberately not committed, so
+    a fresh clone has the cleaned parquet but not its source; every other test
+    runs against the parquet and still passes. Failing here would tell a reviewer
+    the project is broken when it is only missing an optional download.
     """
+    missing = [
+        name
+        for name in cfg.RAW_FILES.values()
+        if not os.path.exists(os.path.join(cfg.RAW_DIR, name))
+    ]
+    if missing:
+        pytest.skip(
+            f"raw Olist CSVs not present in {cfg.RAW_DIR} "
+            f"(missing {len(missing)} of {len(cfg.RAW_FILES)}); "
+            "download them to run the full cleaning pipeline"
+        )
+
     from data.clean import build
 
     orders, report = build()

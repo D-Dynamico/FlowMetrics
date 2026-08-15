@@ -205,8 +205,9 @@ important:
   decision, and explaining it is what separates a project someone built from a
   project someone understands.
 
-Include a screenshot. A dashboard project with no image of the dashboard makes a
-reader assume it does not run.
+A screenshot helps, but the run instructions carry more weight: they must work
+from a clean clone, verified, so a reader can see the thing running in under a
+minute rather than taking an image on trust.
 
 ---
 

@@ -568,7 +568,7 @@ endpoints, which are mechanical once the analysis returns clean structures.
 
 **Day 3 — Frontend and packaging.**
 Dashboard in priority order (KPI cards, toggle, RCA panel, review impact,
-throughput, table). Then the README, screenshots, and a tidy pass over commits.
+throughput, table). Then the README and a tidy pass over commits.
 
 **If you fall behind**, cut in this order: order table, throughput chart, geo
 endpoint, frontend polish. Never cut the RCA, the tests, the cleaning report or
@@ -584,7 +584,9 @@ code.
 1. **One-paragraph problem statement.** The operational question this answers.
 2. **Data source and attribution.** Olist, Kaggle, 100k orders, 2016 to 2018,
    real and anonymised. Link it.
-3. **Screenshot** of the dashboard.
+3. A dashboard screenshot if one is available. Not required: the run
+   instructions have to work from a clean clone regardless, and a stale image
+   of an older layout is worse than none.
 4. **Key findings**, quoted from the generated headline. Include the promise
    slack finding, the seller concentration figure and the review impact finding,
    not just the leg breakdown. State the volume floors used for any ranking.
