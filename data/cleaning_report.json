@@ -1,0 +1,13 @@
+{
+  "raw_orders": 99441,
+  "dropped_not_delivered": 2963,
+  "dropped_null_timestamps": 23,
+  "dropped_outside_date_window": 267,
+  "dropped_no_items": 0,
+  "dropped_multi_seller": 1272,
+  "missing_distance": 470,
+  "dropped_negative_duration": 1317,
+  "dropped_impossible_tat": 14,
+  "clean_orders": 93585,
+  "survival_rate": 0.9411
+}

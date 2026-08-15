@@ -14,6 +14,7 @@ an unexplained row-count drop stops trusting everything above it.
 
 from __future__ import annotations
 
+import json
 import os
 
 import numpy as np
@@ -245,7 +246,14 @@ def main() -> None:
     orders, report = build()
     orders.to_parquet(cfg.CLEAN_PATH, index=False)
 
+    # Written to disk, not just printed, because the dashboard shows these counts
+    # and the README quotes them. An exclusion nobody can see is a hole in the
+    # analysis, so the report has to survive the run that produced it.
+    with open(cfg.CLEANING_REPORT_PATH, "w", encoding="utf-8") as handle:
+        json.dump(report, handle, indent=2)
+
     print(f"wrote {len(orders):,} orders to {cfg.CLEAN_PATH}")
+    print(f"wrote cleaning report to {cfg.CLEANING_REPORT_PATH}")
     print()
     for rule, count in report.items():
         print(f"  {rule:<32} {count:>10,}")

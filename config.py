@@ -15,6 +15,10 @@ from __future__ import annotations
 RAW_DIR = "data/raw"
 CLEAN_PATH = "data/orders_clean.parquet"
 
+# The cleaning report is written to disk rather than only printed, because the
+# dashboard displays these counts and the README quotes them.
+CLEANING_REPORT_PATH = "data/cleaning_report.json"
+
 RAW_FILES = {
     "orders": "olist_orders_dataset.csv",
     "order_items": "olist_order_items_dataset.csv",
