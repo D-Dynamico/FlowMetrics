@@ -150,6 +150,27 @@ hundredth of an hour. A mis-wired leg boundary would otherwise produce a
 plausible-looking breakdown that does not line up with the clock, which is the
 kind of error that survives review because every individual number looks fine.
 
+### Cleaning report is written to disk, not just printed
+
+`data/cleaning_report.json` is produced by the same run that writes the parquet,
+and `/api/meta` serves it to the dashboard. Printing it meant the counts existed
+only in a terminal nobody kept, which defeats the point: the exclusions have to
+be visible in the app for the numbers above them to be trustworthy.
+
+### RCA is computed per order type on first request
+
+Loading the table costs about half a second and each RCA run about two. Running
+all three scopes at import would roughly triple startup for results a session
+may never request, so each is computed on demand and kept. Safe rather than
+stale because the table does not change during a run.
+
+### Numpy types converted at the API boundary
+
+Pandas aggregations return `numpy.int64` and `numpy.bool_`, which the JSON
+encoder rejects. `_json_safe()` handles the conversion in `api/main.py` rather
+than in the analysis functions, so the analysis layer stays free of
+serialisation concerns and keeps returning natural pandas output.
+
 ### Raw CSVs are gitignored, cleaned parquet is committed
 
 `data/raw/` is ignored for Kaggle licensing and size; `data/orders_clean.parquet`
