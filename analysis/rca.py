@@ -295,7 +295,13 @@ def _headline(df: pd.DataFrame, overall: dict, slack: dict) -> str:
         key=lambda item: item[1]["lift"],
         reverse=True,
     )[:3]
-    named = ", ".join(f"{state} ({stats['lift']:.1f}x)" for state, stats in ranked)
+    # Full state names, not codes. This sentence is the most-read line in the
+    # project and goes straight into the README; "AL" means nothing to a reader
+    # who is not Brazilian, which is most of them.
+    named = ", ".join(
+        f"{cfg.STATE_NAMES.get(state, state)} ({stats['lift']:.1f}x)"
+        for state, stats in ranked
+    )
 
     return (
         f"{late_rate:.1%} of orders miss their promised delivery date. "

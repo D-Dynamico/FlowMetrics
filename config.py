@@ -103,6 +103,23 @@ STATE_TO_REGION = {
     "PR": "South", "RS": "South", "SC": "South",
 }
 
+# Full state names, served to the dashboard so nothing user-facing is a bare
+# two-letter code. The reader of this project is unlikely to be Brazilian, and
+# "SP-RJ" is unreadable to anyone who is not; "São Paulo → Rio de Janeiro" needs
+# no lookup. Codes stay in the data and in every ranking key, because they are
+# what the source uses and shortening them at load time would break the join.
+STATE_NAMES = {
+    "AC": "Acre", "AL": "Alagoas", "AP": "Amapá", "AM": "Amazonas",
+    "BA": "Bahia", "CE": "Ceará", "DF": "Distrito Federal",
+    "ES": "Espírito Santo", "GO": "Goiás", "MA": "Maranhão",
+    "MT": "Mato Grosso", "MS": "Mato Grosso do Sul", "MG": "Minas Gerais",
+    "PA": "Pará", "PB": "Paraíba", "PR": "Paraná", "PE": "Pernambuco",
+    "PI": "Piauí", "RJ": "Rio de Janeiro", "RN": "Rio Grande do Norte",
+    "RS": "Rio Grande do Sul", "RO": "Rondônia", "RR": "Roraima",
+    "SC": "Santa Catarina", "SP": "São Paulo", "SE": "Sergipe",
+    "TO": "Tocantins",
+}
+
 # Kilometres. Bands rather than a raw distance because adherence per band is
 # readable in a sentence, where a scatter plot of 90,000 points is not.
 DISTANCE_BANDS_KM = (

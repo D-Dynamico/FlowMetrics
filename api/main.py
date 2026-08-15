@@ -21,6 +21,7 @@ import numpy as np
 import pandas as pd
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 import config as cfg
 from analysis import kpis, lanes
@@ -135,8 +136,14 @@ def get_rca(order_type: str | None = Query(None)) -> dict:
 
 
 @app.get("/api/sellers")
-def get_sellers(order_type: str | None = Query(None)) -> dict:
+def get_sellers(
+    order_type: str | None = Query(None), limit: int = Query(50, ge=1, le=1000)
+) -> dict:
     """Seller handover performance and the concentration summary.
+
+    Returns the worst `limit` sellers rather than all of them. The full list is
+    around 800 rows and 140 kB, and no reader scrolls it; the finding worth
+    showing is the Pareto summary plus the tail that needs a phone call.
 
     The minimum order count is returned alongside the ranking so the dashboard
     can display it. A ranking whose floor is invisible invites the reader to
@@ -164,8 +171,11 @@ def get_sellers(order_type: str | None = Query(None)) -> dict:
             "pareto": kpis.seller_pareto(scoped),
             "seller_sla": kpis.seller_sla(scoped),
             "min_orders_per_seller": cfg.MIN_ORDERS_PER_SELLER,
+            "sellers_above_floor": int(len(table)),
+            "showing": min(limit, len(table)),
             "sellers": table.round(4)
             .sort_values("adherence")
+            .head(limit)
             .reset_index()
             .to_dict("records"),
         }
@@ -233,6 +243,19 @@ def get_orders(
     )
 
 
+def mount_frontend() -> None:
+    """Serve the built dashboard from the same process as the API.
+
+    Mounted last so it never shadows an `/api/` route. A reviewer runs one
+    command and gets the whole app; the alternative is two terminals and a
+    README step people skip. If the build is absent the API still runs, which is
+    what keeps the tests and a fresh clone working before `npm run build`.
+    """
+    dist = os.path.join("frontend", "dist")
+    if os.path.isdir(dist):
+        app.mount("/", StaticFiles(directory=dist, html=True), name="dashboard")
+
+
 @app.get("/api/meta")
 def get_meta() -> dict:
     """Cleaning report, row counts, date range and data source attribution.
@@ -255,6 +278,21 @@ def get_meta() -> dict:
                 str(ORDERS["order_purchase_timestamp"].max().date()),
             ],
             "order_type_counts": ORDERS["order_type"].value_counts().to_dict(),
+            # Only the states that survive cleaning, with their full names and
+            # order counts. The dashboard builds its filters from this rather
+            # than hardcoding a list that could drift from the data.
+            "states": [
+                {
+                    "code": code,
+                    "name": cfg.STATE_NAMES.get(code, code),
+                    "region": cfg.STATE_TO_REGION.get(code),
+                    "orders": int(count),
+                }
+                for code, count in ORDERS["customer_state"]
+                .value_counts()
+                .sort_values(ascending=False)
+                .items()
+            ],
             "data_source": cfg.DATA_SOURCE,
             "floors": {
                 "min_orders_per_lane": cfg.MIN_ORDERS_PER_LANE,
@@ -263,3 +301,7 @@ def get_meta() -> dict:
             },
         }
     )
+
+
+# Declared after every route above, so the static mount cannot shadow the API.
+mount_frontend()
