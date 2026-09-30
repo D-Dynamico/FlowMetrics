@@ -526,14 +526,14 @@ flowmetrics/
 │                           # lane volume floor, min orders per seller for ranking
 ├── data/
 │   ├── raw/                # Olist CSVs, gitignored
-│   ├── clean.py            # join, derive, clean; writes parquet + cleaning report
-│   └── orders_clean.parquet
+│   ├── clean.py            # join, derive, clean; distance; writes parquet + report
+│   ├── orders_clean.parquet
+│   └── cleaning_report.json
 ├── analysis/
 │   ├── loader.py           # parquet -> DataFrame, derived legs and flags
 │   ├── kpis.py             # pure KPI functions
 │   ├── rca.py              # the three-stage narrowing
-│   ├── lanes.py            # origin-destination aggregation and ranking
-│   └── geo.py              # zip -> lat/lng, haversine, distance bands
+│   └── lanes.py            # origin-destination aggregation and ranking
 ├── api/
 │   └── main.py             # FastAPI app, thin endpoints
 ├── tests/
