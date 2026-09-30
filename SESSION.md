@@ -8,7 +8,7 @@ Every entry is a headline followed by four or five lines at most.
 
 ---
 
-## 2026-08-15
+## 2026-08-15 to 08-16
 
 ### Dropped the synthetic dataset for real Olist data
 
