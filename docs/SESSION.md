@@ -276,3 +276,5 @@ The review chart's bars no longer animate: the capture fired mid-animation and
 showed an empty chart, and re-animating on every toggle added nothing. If the
 dashboard changes, recapture: `chrome --headless=new --window-size=1200,4200
 --force-device-scale-factor=1.5 --screenshot=full.png http://localhost:8000/`.
+The overview was then cut to end after the stage bar, and all three were reduced
+to 256 colours, taking them from 357 KB to 142 KB with no visible change.

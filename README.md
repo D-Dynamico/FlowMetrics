@@ -16,8 +16,6 @@ real, anonymised orders from 2016 to 2018. It records two deadlines most dataset
 lack: the delivery date promised to the customer at purchase, and the date by
 which the seller must hand the parcel to the carrier.
 
-![The dashboard: headline numbers, the stage that fails, and where failure concentrates](docs/images/overview.png)
-
 ---
 
 ## Running it
@@ -41,6 +39,24 @@ python -m pytest tests/
 27 tests pass on a fresh clone. The 28th rebuilds the table from the raw CSVs,
 so it skips unless they are present. To rebuild from source, download the CSVs
 from Kaggle into `data/raw/` and run `python -m data.clean`.
+
+---
+
+## Dashboard
+
+The finding first: the headline numbers, the generated summary, and which stage
+of the journey fails.
+
+![Headline numbers, the generated finding, and which stage fails](docs/images/overview.png)
+
+Then who to act on: the worst routes, and how few sellers carry half the late
+orders.
+
+![The worst routes by on-time rate, and the seller concentration](docs/images/who-to-act-on.png)
+
+And what lateness costs in review scores.
+
+![Review scores for on-time and late orders](docs/images/what-it-costs.png)
 
 ---
 
@@ -93,15 +109,11 @@ The worst states are Alagoas (3.4×), Maranhão (2.8×) and Ceará (2.3×).
 **The average review score falls from 4.32 to 2.56 when an order misses its
 date.** This is the link between the operational number and the business.
 
-![Review scores for on-time and late orders](docs/images/what-it-costs.png)
-
 ### 6. 72 sellers hold half the late orders
 
 Of 777 sellers with at least 20 orders, **72 account for half of all late
 orders**, and the worst 10% account for 50%. This is a seller-management problem,
 not a floor-process one.
-
-![The worst routes by on-time rate, and how few sellers carry half the late orders](docs/images/who-to-act-on.png)
 
 ---
 
