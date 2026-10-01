@@ -47,16 +47,22 @@ from Kaggle into `data/raw/` and run `python -m data.clean`.
 The finding first: the headline numbers, the generated summary, and which stage
 of the journey fails.
 
-![Headline numbers, the generated finding, and which stage fails](docs/images/overview.png)
+<p align="center">
+  <img src="docs/images/overview.png" alt="Headline numbers, the generated finding, and which stage fails" width="600">
+</p>
 
 Then who to act on: the worst routes, and how few sellers carry half the late
 orders.
 
-![The worst routes by on-time rate, and the seller concentration](docs/images/who-to-act-on.png)
+<p align="center">
+  <img src="docs/images/who-to-act-on.png" alt="The worst routes by on-time rate, and the seller concentration" width="600">
+</p>
 
 And what lateness costs in review scores.
 
-![Review scores for on-time and late orders](docs/images/what-it-costs.png)
+<p align="center">
+  <img src="docs/images/what-it-costs.png" alt="Review scores for on-time and late orders" width="600">
+</p>
 
 ---
 
