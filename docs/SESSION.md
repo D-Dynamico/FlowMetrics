@@ -1,8 +1,9 @@
 # SESSION.md — Build log
 
 What was built and what was decided, recorded as it happens. Nothing here is a
-plan. `PLAN.md` says what to build, `CLAUDE.md` says how; this file says what
-actually got written and why it was written that way.
+plan. `docs/PLAN.md` says what to build, `CLAUDE.md` and the guideline files in
+`docs/` say how; this file says what actually got written and why it was written
+that way.
 
 Every entry is a headline followed by four or five lines at most.
 
@@ -248,3 +249,21 @@ from the analysis, with no arithmetic in the browser.
 The footer shows the kept-versus-raw total on one line. The per-rule counts open
 underneath it. The intro's order count now comes from the API instead of being
 typed into the page.
+
+### README tightened, interview notes removed from the plan
+
+The README went from about 300 lines to about 210. Run instructions moved up
+under the problem statement so a reader can start the app before reading
+findings. The method section lost the list of factors tested, the run section
+lost the frontend-development note, and the folder layout now sits behind a
+collapsed section. Limitations are a short list instead of paragraphs. Every
+figure was rechecked against the live API before editing. One wording error was
+fixed: 9.1% is the share of orders that miss the seller handover deadline, not
+the share of sellers. The interview question bank was removed from `PLAN.md`.
+
+### Docs moved into a docs folder, CLAUDE.md cut to the essentials
+
+`PLAN.md` and `SESSION.md` moved into `docs/`. `CLAUDE.md` went from 270 lines
+to about 55: the six non-negotiables, the basic rules and a table pointing to the
+detail. The detail moved word for word into `docs/CODE_GUIDELINES.md`,
+`docs/GLOSSARY.md`, `docs/HONESTY.md` and `docs/COMMITS.md`, so nothing was lost.
