@@ -267,3 +267,12 @@ the share of sellers. The interview question bank was removed from `PLAN.md`.
 to about 55: the six non-negotiables, the basic rules and a table pointing to the
 detail. The detail moved word for word into `docs/CODE_GUIDELINES.md`,
 `docs/GLOSSARY.md`, `docs/HONESTY.md` and `docs/COMMITS.md`, so nothing was lost.
+
+### Screenshots added to the README
+
+Three images in `docs/images/`, cropped from one full-page capture of the
+running app by headless Chrome, so they show exactly what a fresh clone renders.
+The review chart's bars no longer animate: the capture fired mid-animation and
+showed an empty chart, and re-animating on every toggle added nothing. If the
+dashboard changes, recapture: `chrome --headless=new --window-size=1200,4200
+--force-device-scale-factor=1.5 --screenshot=full.png http://localhost:8000/`.
