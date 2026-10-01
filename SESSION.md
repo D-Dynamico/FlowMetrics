@@ -225,3 +225,26 @@ clone, 28 with the CSVs present, and the README states both.
 is the committed artefact so a reviewer can run the app without a Kaggle account.
 `data/clean.py` stays reproducible from the raw CSVs either way, and the README
 documents the download step.
+
+### Dashboard cut down and reorganised as a three-step story
+
+The page read as eight equal blocks of tables. It now runs: headline numbers,
+then 1 which stage fails and where, 2 who to act on (routes, sellers), 3 what it
+costs, then the daily series and order list together under one tabbed panel. The
+order type toggle moved into a sticky top bar so it stays in reach. Cut: the
+review score tile (it repeated section 3), the slack percentiles, state codes
+beside names, the distance column on routes, the product category footnote, and
+the full handover breakdown table, now one sentence. Routes show the top 8, not 15.
+
+### Seller curve replaced because it contradicted its own headline
+
+The cumulative curve was drawn from the 50 sellers the endpoint returns, so it hit
+100% at seller 50 while the figure beside it said 72 sellers make up half the late
+orders. It is now a single bar marking the 50% and 80% points, both taken directly
+from the analysis, with no arithmetic in the browser.
+
+### Exclusions moved behind a click, not removed
+
+The footer shows the kept-versus-raw total on one line. The per-rule counts open
+underneath it. The intro's order count now comes from the API instead of being
+typed into the page.
