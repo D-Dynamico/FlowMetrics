@@ -1,11 +1,16 @@
 import { useApi, scopedPath, percent, number } from '../api'
-import { Loading, Failed } from './Panel'
+import { Skeleton, Failed } from './Panel'
 
-function Kpi({ label, value, children }) {
+const TYPE_LABEL = { interstate: 'Between states', intrastate: 'Within state' }
+
+function Kpi({ label, value, unit, tone, children }) {
   return (
-    <div className="kpi">
+    <div className={`kpi ${tone ?? ''}`}>
       <div className="label">{label}</div>
-      <div className="value">{value}</div>
+      <div className="value">
+        {value}
+        {unit && <small>{unit}</small>}
+      </div>
       {children && <div className="sub">{children}</div>}
     </div>
   )
@@ -14,12 +19,11 @@ function Kpi({ label, value, children }) {
 export function KpiRow({ orderType }) {
   const { data, error, loading } = useApi(scopedPath('/api/kpis', orderType))
 
-  if (loading) return <Loading what="headline numbers" />
+  if (loading) return <Skeleton height={132} />
   if (error) return <Failed error={error} />
 
   const split = data.adherence_by_order_type || {}
   const slack = data.promise_slack || {}
-  const review = data.review_impact || {}
 
   return (
     <div className="kpi-row">
@@ -27,55 +31,24 @@ export function KpiRow({ orderType }) {
           interstate and intrastate are different operations, so the pooled rate
           moves whenever the order mix moves even when nothing operational has
           changed. Showing it alone invites exactly that misreading. */}
-      <Kpi label="On-time delivery" value={percent(data.sla_adherence)}>
-        {Object.entries(split).map(([type, rate]) => (
+      <Kpi label="Delivered on time" value={percent(data.sla_adherence)}>
+        {orderType === 'all' && Object.entries(split).map(([type, rate]) => (
           <span key={type}>
-            {type} <b>{percent(rate)}</b>
+            {TYPE_LABEL[type] ?? type} <b>{percent(rate)}</b>
           </span>
         ))}
       </Kpi>
 
-      {/* Second, not last. A median order arriving nearly two weeks early is the
-          strongest thing this data says, and it reframes the adherence number
-          directly above it. */}
-      <Kpi
-        label="Typical delivery vs promise"
-        value={
-          <>
-            {slack.median_days ?? '—'}
-            <small>days early</small>
-          </>
-        }
-      >
-        <span>
-          10th pct <b>{slack.p10_days}</b>
-        </span>
-        <span>
-          90th pct <b>{slack.p90_days}</b>
-        </span>
-      </Kpi>
-
-      <Kpi label="Late orders" value={number(data.late_orders)}>
+      <Kpi label="Late orders" value={number(data.late_orders)} tone="bad">
         <span>
           of <b>{number(data.orders)}</b> delivered
         </span>
       </Kpi>
 
-      <Kpi
-        label="Review score when late"
-        value={
-          <>
-            {review.late?.mean_score ?? '—'}
-            <small>of 5</small>
-          </>
-        }
-      >
-        <span>
-          on time <b>{review.on_time?.mean_score}</b>
-        </span>
-        <span>
-          gap <b>−{review.score_gap}</b>
-        </span>
+      {/* A median order arriving nearly two weeks early is the strongest thing
+          this data says, and it reframes the on-time rate beside it. */}
+      <Kpi label="Typical on-time order arrives" value={slack.median_days?.toFixed(1) ?? '—'} unit="days early">
+        <span>The promise has more padding than the operation needs</span>
       </Kpi>
     </div>
   )

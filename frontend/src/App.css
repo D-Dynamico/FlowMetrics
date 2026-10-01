@@ -1,112 +1,122 @@
+/* Layout ------------------------------------------------------------------ */
+
 .page {
-  max-width: 1120px;
+  max-width: 1040px;
   margin: 0 auto;
-  padding: var(--s7) var(--s5) 96px;
+  padding: var(--s6) var(--s5) 96px;
 }
 
-/* Masthead ---------------------------------------------------------------- */
+/* Top bar -----------------------------------------------------------------
+   Sticky, because the order type toggle drives every block on the page and
+   used to scroll out of reach after the first screen. */
 
-.masthead {
-  padding-bottom: var(--s5);
-  border-bottom: 1px solid var(--border-strong);
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(245, 244, 242, 0.86);
+  backdrop-filter: saturate(1.4) blur(10px);
+  border-bottom: 1px solid var(--border);
 }
 
-.masthead h1 {
-  font-size: 22px;
-  letter-spacing: -0.02em;
-}
-
-.masthead p {
-  margin-top: var(--s2);
-  color: var(--ink-soft);
-  max-width: 66ch;
-}
-
-/* Panels ------------------------------------------------------------------
-   A hairline border and no shadow. Border plus shadow plus a tinted background
-   is three ways of saying the same thing, and it is what makes a plain layout
-   look cluttered rather than calm. */
-
-.panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: var(--s5);
-  margin-top: var(--s4);
-}
-
-/* The root cause panel is the centrepiece, so it is the one thing on the page
-   allowed to look heavier than everything else. */
-.panel.feature {
-  border-color: var(--border-strong);
-  border-top: 2px solid var(--accent);
-  padding: var(--s6) var(--s5) var(--s5);
-}
-
-.panel > header {
+.topbar-inner {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: var(--s3) var(--s5);
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--s3);
-  margin-bottom: var(--s4);
+  gap: var(--s4);
   flex-wrap: wrap;
 }
 
-/* Sentence case, not uppercase. Four levels of letterspaced capitals across a
-   page turns every label into texture and none of them get read. */
-.panel h2 {
-  font-size: 14px;
-  font-weight: 600;
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  font-weight: 650;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+}
+
+.segmented {
+  display: inline-flex;
+  background: var(--border);
+  border-radius: 9px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.segmented button {
+  border: 0;
+  background: transparent;
+  border-radius: 7px;
+  padding: 6px 14px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+
+.segmented button:hover {
   color: var(--ink);
 }
 
-.panel .note {
-  font-size: 12px;
-  color: var(--ink-faint);
+.segmented button[aria-pressed='true'] {
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 550;
+  box-shadow: 0 1px 2px rgba(27, 26, 24, 0.12);
 }
 
-.subhead {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--ink-faint);
-  margin-bottom: var(--s2);
+/* Intro ------------------------------------------------------------------- */
+
+.intro h1 {
+  font-size: 30px;
+  line-height: 1.2;
+  letter-spacing: -0.025em;
+  font-weight: 650;
+  max-width: 32ch;
+}
+
+.intro p {
+  margin-top: var(--s3);
+  color: var(--ink-soft);
+  font-size: 15px;
+  max-width: 60ch;
 }
 
 /* KPI row ----------------------------------------------------------------- */
 
 .kpi-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 0;
-  margin-top: var(--s5);
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s3);
+  margin-top: var(--s6);
+}
+
+.kpi {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  overflow: hidden;
-}
-
-/* One card divided by rules rather than four floating boxes: these are four
-   readings of the same population, not four separate things. */
-.kpi {
-  padding: var(--s5);
-  border-right: 1px solid var(--border);
-}
-
-.kpi:last-child {
-  border-right: none;
+  padding: var(--s4) var(--s5) var(--s5);
 }
 
 .kpi .label {
-  font-size: 12px;
-  color: var(--ink-faint);
+  font-size: 13px;
+  color: var(--ink-soft);
 }
 
 .kpi .value {
-  font-size: 29px;
-  font-weight: 600;
-  letter-spacing: -0.025em;
-  line-height: 1.15;
+  font-size: 36px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
   margin-top: var(--s2);
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi.bad .value {
+  color: var(--late);
 }
 
 .kpi .value small {
@@ -114,14 +124,12 @@
   font-weight: 500;
   color: var(--ink-soft);
   letter-spacing: 0;
-  margin-left: 3px;
+  margin-left: 6px;
 }
 
 .kpi .sub {
   margin-top: var(--s3);
-  padding-top: var(--s3);
-  border-top: 1px solid var(--border);
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--ink-faint);
   display: flex;
   gap: var(--s4);
@@ -134,85 +142,172 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Toggle ------------------------------------------------------------------ */
+/* Sections ---------------------------------------------------------------- */
 
-.toggle {
+.section {
+  margin-top: var(--s7);
+}
+
+.section-head {
   display: flex;
-  gap: var(--s1);
-  margin-top: var(--s4);
-  align-items: center;
+  gap: var(--s3);
+  align-items: flex-start;
+  margin-bottom: var(--s4);
+}
+
+.step {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--surface);
+  font-size: 12px;
+  font-weight: 600;
+  display: grid;
+  place-items: center;
+  margin-top: 1px;
+}
+
+.section h2 {
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+.lede {
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+
+.section > .panel + .panel {
+  margin-top: var(--s3);
+}
+
+/* Panels ------------------------------------------------------------------ */
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--s5);
+}
+
+.panel.feature {
+  padding: var(--s6);
+}
+
+.panel > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s3);
+  margin-bottom: var(--s4);
   flex-wrap: wrap;
 }
 
-.toggle button {
-  border: 1px solid var(--border-strong);
-  background: var(--surface);
-  border-radius: 7px;
-  padding: 7px 14px;
-  color: var(--ink-soft);
-  font-size: 13px;
-  transition: background 0.12s, color 0.12s, border-color 0.12s;
+.panel h3 {
+  font-size: 15px;
+  font-weight: 600;
 }
 
-.toggle button:hover {
-  border-color: var(--ink-faint);
+.panel header .note {
+  display: block;
+  margin-top: 2px;
+}
+
+.note {
+  font-size: 12.5px;
+  color: var(--ink-faint);
+}
+
+.fine {
+  font-size: 12px;
+  color: var(--ink-faint);
+  margin-top: var(--s2);
+}
+
+.muted {
+  color: var(--ink-faint);
+}
+
+.subhead {
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--ink-soft);
+  margin-bottom: var(--s3);
+}
+
+.block {
+  margin-top: var(--s6);
+}
+
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--s6);
+  margin-top: var(--s6);
+}
+
+.split.tight {
+  margin-top: 0;
+  align-items: center;
+}
+
+/* Tabs -------------------------------------------------------------------- */
+
+.tabs {
+  display: inline-flex;
+  gap: 2px;
+  background: var(--surface-sunk);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.tabs button {
+  border: 0;
+  background: transparent;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+.tabs button:hover {
   color: var(--ink);
 }
 
-.toggle button[aria-pressed='true'] {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--surface);
-  font-weight: 500;
-}
-
-.toggle .hint {
-  margin-left: auto;
-  font-size: 12px;
-  color: var(--ink-faint);
+.tabs button[aria-selected='true'] {
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 550;
+  box-shadow: 0 1px 2px rgba(27, 26, 24, 0.1);
 }
 
 /* RCA --------------------------------------------------------------------- */
 
 .headline {
-  font-size: 20px;
+  font-size: 21px;
   line-height: 1.5;
   font-weight: 500;
   letter-spacing: -0.012em;
-  max-width: 74ch;
+  max-width: 68ch;
+  text-wrap: pretty;
 }
 
 .segment-note {
   margin-top: var(--s3);
   color: var(--ink-soft);
-  max-width: 74ch;
-}
-
-.caveat {
-  margin-top: var(--s5);
-  background: var(--warn-soft);
-  border: 1px solid #efe2cd;
-  padding: var(--s3) var(--s4);
-  border-radius: 8px;
-  font-size: 13px;
-  line-height: 1.55;
-  color: #6b4f22;
-  max-width: 88ch;
-}
-
-.caveat b {
-  display: block;
-  margin-bottom: var(--s1);
-  font-size: 12px;
-  color: #8a6526;
+  max-width: 72ch;
 }
 
 .leg-bar {
   display: flex;
-  height: 30px;
-  border-radius: 6px;
+  height: 36px;
+  border-radius: 8px;
   overflow: hidden;
-  margin-top: var(--s2);
+  gap: 2px;
 }
 
 .leg-bar span {
@@ -220,85 +315,274 @@
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
-  min-width: 0;
+  min-width: 3px;
+  transition: width 0.3s ease;
 }
 
 .legend {
   display: flex;
   gap: var(--s4);
-  margin-top: var(--s2);
-  font-size: 12px;
-  color: var(--ink-faint);
+  margin-top: var(--s3);
+  font-size: 12.5px;
+  color: var(--ink-soft);
   flex-wrap: wrap;
+}
+
+.legend b {
+  font-weight: 600;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
 }
 
 .legend i {
   display: inline-block;
-  width: 9px;
-  height: 9px;
-  border-radius: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
   margin-right: 6px;
+  vertical-align: -1px;
 }
 
-.block {
-  margin-top: var(--s5);
-}
-
-.split {
+/* Horizontal bar list: label, bar, value. */
+.bars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--s5);
-  margin-top: var(--s5);
+  gap: var(--s2);
 }
 
-/* The two-letter code kept beside the full name: the name is what a reader
-   understands, the code is what the source data and every ranking key use. */
-.code {
-  font-size: 11px;
-  color: var(--ink-faint);
-  font-weight: 500;
-  letter-spacing: 0.02em;
+.bars li {
+  display: grid;
+  grid-template-columns: 9.5em 1fr 3.6em;
+  align-items: center;
+  gap: var(--s3);
+  font-size: 13.5px;
 }
 
-.lift-over {
-  color: var(--late);
+.bar-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bar-track {
+  height: 10px;
+  background: var(--surface-sunk);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: var(--accent);
+  transition: width 0.3s ease;
+}
+
+.bar-fill.late {
+  background: var(--late);
+}
+
+.bar-value {
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Simple label / detail / value rows. */
+.rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rows li {
+  display: grid;
+  grid-template-columns: 1fr auto 4em;
+  gap: var(--s3);
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.rows li:last-child {
+  border-bottom: 0;
+}
+
+.rows li b {
+  text-align: right;
   font-weight: 600;
 }
 
-.lift-under {
-  color: var(--ink-faint);
+.rows li.flag b {
+  color: var(--late);
+}
+
+.rows .muted {
+  font-size: 12.5px;
+}
+
+.caveat {
+  display: flex;
+  gap: var(--s3);
+  margin-top: var(--s6);
+  padding-top: var(--s4);
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+.caveat-icon {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--warn-soft);
+  color: var(--warn);
+  border: 1px solid #ecd9b8;
+  font-size: 11px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  margin-top: 2px;
 }
 
 /* Stated figures ---------------------------------------------------------- */
 
 .figure {
-  font-size: 26px;
-  font-weight: 600;
-  letter-spacing: -0.022em;
-  line-height: 1.25;
+  font-size: 30px;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.figure .arrow {
+  color: var(--ink-faint);
+  font-weight: 400;
+  margin: 0 0.3em;
+}
+
+.figure .bad {
+  color: var(--late);
 }
 
 .figure small {
   display: block;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 400;
   color: var(--ink-soft);
   letter-spacing: 0;
   line-height: 1.6;
   margin-top: var(--s2);
-  max-width: 56ch;
+  max-width: 52ch;
+}
+
+.callout {
+  margin-top: var(--s5);
+  padding: var(--s3) var(--s4);
+  background: var(--accent-soft);
+  border-radius: 8px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+}
+
+.callout b {
+  color: var(--accent);
+  font-size: 15px;
+}
+
+/* Seller milestones ------------------------------------------------------- */
+
+.milestones {
+  margin-top: var(--s5);
+}
+
+.ms-track {
+  position: relative;
+  height: 14px;
+  background: var(--surface-sunk);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.ms-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  transition: width 0.3s ease;
+}
+
+.ms-0 {
+  background: var(--late);
+  z-index: 2;
+}
+
+.ms-1 {
+  background: #e4b4ae;
+  z-index: 1;
+}
+
+.ms-rest {
+  background: var(--surface-sunk);
+  border: 1px solid var(--border-strong);
+}
+
+.ms-legend {
+  list-style: none;
+  margin: var(--s3) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s5);
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+.ms-legend i {
+  display: inline-block;
+  position: static;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  margin-right: 6px;
+  vertical-align: -1px;
+}
+
+.ms-legend b {
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Tables and filters ------------------------------------------------------ */
 
-.scroll {
-  overflow: auto;
-  max-height: 400px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
+table.data th,
+table.data td {
+  padding: 9px var(--s3);
+}
+
+table.data th:first-child,
+table.data td:first-child {
+  padding-left: 0;
+}
+
+table.data th:last-child,
+table.data td:last-child {
+  padding-right: 0;
+}
+
+td.sorted {
+  font-weight: 600;
+  color: var(--ink);
 }
 
 .filters {
@@ -306,49 +590,89 @@
   gap: var(--s2);
   flex-wrap: wrap;
   align-items: center;
-  margin-bottom: var(--s3);
+  margin-bottom: var(--s4);
 }
 
-.filters select,
-.filters button.page {
+.filters .legend {
+  margin: 0 0 0 auto;
+}
+
+.push {
+  margin-left: auto;
+}
+
+select {
   font: inherit;
   font-size: 13px;
-  padding: 5px 10px;
+  padding: 6px 28px 6px 10px;
   border: 1px solid var(--border-strong);
-  border-radius: 6px;
+  border-radius: 7px;
+  background: var(--surface)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2393908a' stroke-width='1.5'/%3E%3C/svg%3E")
+    no-repeat right 10px center;
+  appearance: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+select:hover {
+  border-color: var(--ink-faint);
+}
+
+.pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--s4);
+}
+
+.pager button {
+  border: 1px solid var(--border-strong);
   background: var(--surface);
+  border-radius: 7px;
+  padding: 5px 12px;
+  font-size: 13px;
   color: var(--ink-soft);
 }
 
-.filters button.page:hover:not(:disabled) {
-  border-color: var(--ink-faint);
+.pager button:hover:not(:disabled) {
   color: var(--ink);
+  border-color: var(--ink-faint);
 }
 
-.filters button.page:disabled {
-  opacity: 0.45;
+.pager button:disabled {
+  opacity: 0.4;
   cursor: default;
-}
-
-.filters button.page[aria-pressed='true'] {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: var(--accent-soft);
-  font-weight: 500;
 }
 
 /* Charts need an explicit height on the wrapper, or ResponsiveContainer
    resolves to zero and the panel renders empty. */
 .chart {
-  height: 200px;
-  margin-top: var(--s2);
+  height: 220px;
 }
 
 .chart.tall {
-  height: 240px;
+  height: 260px;
 }
 
 /* States ------------------------------------------------------------------ */
+
+.skeleton {
+  border-radius: var(--radius);
+  background: linear-gradient(90deg, var(--surface) 0%, var(--surface-sunk) 50%, var(--surface) 100%);
+  background-size: 200% 100%;
+  border: 1px solid var(--border);
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
 
 .state {
   padding: var(--s5);
@@ -362,7 +686,7 @@
 
 .pill {
   display: inline-block;
-  font-size: 11px;
+  font-size: 11.5px;
   padding: 2px 8px;
   border-radius: 999px;
   font-weight: 600;
@@ -381,26 +705,74 @@
 /* Footer ------------------------------------------------------------------ */
 
 .footer {
-  margin-top: var(--s6);
-  padding-top: var(--s4);
+  margin-top: var(--s7);
+  padding-top: var(--s5);
   border-top: 1px solid var(--border-strong);
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--ink-faint);
-  line-height: 1.75;
-  max-width: 92ch;
+  line-height: 1.7;
 }
 
-@media (max-width: 720px) {
+.footer summary {
+  margin-top: var(--s2);
+  cursor: pointer;
+  color: var(--ink-soft);
+  width: fit-content;
+}
+
+.footer summary:hover {
+  color: var(--ink);
+}
+
+table.exclusions {
+  max-width: 420px;
+  margin-top: var(--s3);
+  font-size: 12.5px;
+}
+
+table.exclusions td {
+  padding: 5px 0;
+  color: var(--ink-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (max-width: 760px) {
   .page {
     padding: var(--s5) var(--s4) var(--s7);
   }
 
-  .kpi {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
+  .topbar-inner {
+    padding: var(--s2) var(--s4);
+  }
+
+  .segmented button {
+    padding: 6px 10px;
+  }
+
+  .intro h1 {
+    font-size: 24px;
+  }
+
+  .kpi-row,
+  .split {
+    grid-template-columns: 1fr;
+  }
+
+  .panel.feature {
+    padding: var(--s5);
   }
 
   .headline {
     font-size: 18px;
+  }
+
+  .hide-sm {
+    display: none;
   }
 }

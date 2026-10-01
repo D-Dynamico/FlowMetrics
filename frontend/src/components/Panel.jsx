@@ -1,37 +1,63 @@
 // Shared shell for every block, so loading and error states are handled once
 // rather than eight times, and a failed fetch never renders an empty chart that
 // looks like a finding of zero.
-export function Panel({ title, note, feature = false, children }) {
+export function Panel({ title, note, actions, feature = false, children }) {
   return (
-    <section className={feature ? 'panel feature' : 'panel'}>
-      {(title || note) && (
+    <div className={feature ? 'panel feature' : 'panel'}>
+      {(title || note || actions) && (
         <header>
-          {title && <h2>{title}</h2>}
-          {note && <span className="note">{note}</span>}
+          <div>
+            {title && <h3>{title}</h3>}
+            {note && <span className="note">{note}</span>}
+          </div>
+          {actions}
         </header>
       )}
       {children}
-    </section>
+    </div>
   )
 }
 
-export function Loading({ what = 'data' }) {
-  return <div className="state">Loading {what}…</div>
+// A placeholder the size of the block it stands in for, so switching order type
+// does not make the page jump while data loads.
+export function Skeleton({ height = 160 }) {
+  return <div className="skeleton" style={{ height }} aria-label="Loading" />
 }
 
 // Built from /api/meta rather than a hardcoded list, so the options are exactly
-// the states that survive cleaning and are ordered by volume. Full names, with
-// the code kept alongside because the tables and the source data use it.
+// the states that survive cleaning and are ordered by volume.
 export function StateSelect({ value, onChange, meta }) {
   return (
-    <select value={value} onChange={(event) => onChange(event.target.value)}>
+    <select
+      value={value}
+      onChange={(event) => onChange(event.target.value)}
+      aria-label="State"
+    >
       <option value="">All states</option>
       {(meta?.states ?? []).map((state) => (
         <option key={state.code} value={state.code}>
-          {state.name} ({state.code})
+          {state.name}
         </option>
       ))}
     </select>
+  )
+}
+
+// Two or three mutually exclusive views of the same block.
+export function Tabs({ options, value, onChange }) {
+  return (
+    <div className="tabs" role="tablist">
+      {options.map((option) => (
+        <button
+          key={option.key}
+          role="tab"
+          aria-selected={value === option.key}
+          onClick={() => onChange(option.key)}
+        >
+          {option.label}
+        </button>
+      ))}
+    </div>
   )
 }
 

@@ -1,13 +1,12 @@
 import { useState } from 'react'
 import './App.css'
-import { useApi, number } from './api'
+import { useMeta, number, percent } from './api'
 import { KpiRow } from './components/KpiRow'
 import { RcaPanel } from './components/RcaPanel'
 import { LaneTable } from './components/LaneTable'
 import { SellerPareto } from './components/SellerPareto'
 import { ReviewImpact } from './components/ReviewImpact'
-import { Throughput } from './components/Throughput'
-import { OrderTable } from './components/OrderTable'
+import { Explore } from './components/Explore'
 
 const SCOPES = [
   { key: 'all', label: 'All orders' },
@@ -18,11 +17,11 @@ const SCOPES = [
 // The toggle is not decorative. Switching it is how a reader sees that the two
 // segments fail for different reasons: between states the carrier stage
 // dominates, within one state the seller stage surfaces because there is no long
-// transit to absorb a slow handover. State lives here and is passed down, so
-// every block below moves together.
+// transit to absorb a slow handover. It sits in the sticky bar so it stays in
+// reach while reading any block below, all of which move together.
 function OrderTypeToggle({ value, onChange }) {
   return (
-    <div className="toggle">
+    <div className="segmented" role="group" aria-label="Order type">
       {SCOPES.map((scope) => (
         <button
           key={scope.key}
@@ -32,69 +31,129 @@ function OrderTypeToggle({ value, onChange }) {
           {scope.label}
         </button>
       ))}
-      <span className="hint">
-        The two segments fail for different reasons — switch to see it
-      </span>
     </div>
   )
 }
 
-function Footer() {
-  const { data } = useApi('/api/meta')
-  if (!data) return null
+function Section({ step, title, lede, children }) {
+  return (
+    <section className="section">
+      <div className="section-head">
+        <span className="step">{step}</span>
+        <div>
+          <h2>{title}</h2>
+          {lede && <p className="lede">{lede}</p>}
+        </div>
+      </div>
+      {children}
+    </section>
+  )
+}
 
-  const report = data.cleaning_report || {}
-  const source = data.data_source || {}
+// Every exclusion stays visible on the page: the totals in the summary line,
+// the per-rule counts one click away. Hiding them entirely would leave an
+// unexplained drop between the raw and the clean row counts.
+function Footer({ meta }) {
+  if (!meta) return null
+  const report = meta.cleaning_report || {}
+  const source = meta.data_source || {}
+
+  const rules = [
+    ['Not yet delivered', report.dropped_not_delivered],
+    ['More than one seller', report.dropped_multi_seller],
+    ['Impossible timestamps (negative stage)', report.dropped_negative_duration],
+    ['Outside the date range', report.dropped_outside_date_window],
+    ['Missing a timestamp', report.dropped_null_timestamps],
+    ['Over 180 days end to end', report.dropped_impossible_tat],
+  ]
 
   return (
     <footer className="footer">
-      Data:{' '}
-      <a href={source.url} target="_blank" rel="noreferrer">
-        {source.name}
-      </a>
-      , published by {source.publisher} under {source.licence}. Real, anonymised
-      orders placed between {data.date_range?.[0]} and {data.date_range?.[1]}.
-      <br />
-      {number(report.clean_orders)} of {number(report.raw_orders)} orders (
-      {Math.round((report.survival_rate ?? 0) * 100)}%) survive cleaning. Removed:{' '}
-      {number(report.dropped_not_delivered)} not yet delivered,{' '}
-      {number(report.dropped_multi_seller)} with more than one seller,{' '}
-      {number(report.dropped_negative_duration)} with impossible timestamps,{' '}
-      {number(report.dropped_null_timestamps)} missing a timestamp,{' '}
-      {number(report.dropped_outside_date_window)} outside the date range,{' '}
-      {number(report.dropped_impossible_tat)} taking over 180 days.
-      <br />
-      Rankings exclude routes under {data.floors?.min_orders_per_lane} orders and
-      sellers under {data.floors?.min_orders_per_seller}.
+      <p>
+        Data:{' '}
+        <a href={source.url} target="_blank" rel="noreferrer">
+          {source.name}
+        </a>
+        , {source.publisher}, {source.licence}. Real, anonymised orders delivered{' '}
+        {meta.date_range?.[0]} to {meta.date_range?.[1]}.
+      </p>
+      <details>
+        <summary>
+          {number(report.clean_orders)} of {number(report.raw_orders)} orders kept (
+          {percent(report.survival_rate, 0)}) — see what was excluded
+        </summary>
+        <table className="exclusions">
+          <tbody>
+            {rules.map(([label, count]) => (
+              <tr key={label}>
+                <td>{label}</td>
+                <td className="num">{number(count)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p className="fine">
+          Rankings ignore routes under {meta.floors?.min_orders_per_lane} orders and
+          sellers under {meta.floors?.min_orders_per_seller}, so a handful of orders
+          cannot top a list.
+        </p>
+      </details>
     </footer>
   )
 }
 
 export default function App() {
   const [orderType, setOrderType] = useState('all')
+  const meta = useMeta()
 
   return (
-    <div className="page">
-      <div className="masthead">
-        <h1>FlowMetrics</h1>
-        <p>
-          Delivery performance and root cause analysis across 93,585 Brazilian
-          marketplace orders. Which stage of the journey loses the promise, where
-          those losses concentrate, and what travels with them.
-        </p>
-      </div>
+    <>
+      <header className="topbar">
+        <div className="topbar-inner">
+          <div className="brand">
+            <img src="./favicon.svg" alt="" width="20" height="20" />
+            FlowMetrics
+          </div>
+          <OrderTypeToggle value={orderType} onChange={setOrderType} />
+        </div>
+      </header>
 
-      <KpiRow orderType={orderType} />
-      <OrderTypeToggle value={orderType} onChange={setOrderType} />
+      <main className="page">
+        <div className="intro">
+          <h1>Where Brazilian marketplace deliveries lose their promised date</h1>
+          <p>
+            {meta ? number(meta.cleaning_report?.clean_orders) : '…'} delivered
+            orders, {meta?.date_range?.[0]?.slice(0, 4)}–
+            {meta?.date_range?.[1]?.slice(0, 4)}. Switch order type at the top to
+            compare deliveries between states with deliveries inside one state.
+          </p>
+        </div>
 
-      <RcaPanel orderType={orderType} />
-      <LaneTable orderType={orderType} />
-      <SellerPareto orderType={orderType} />
-      <ReviewImpact orderType={orderType} />
-      <Throughput orderType={orderType} />
-      <OrderTable orderType={orderType} />
+        <KpiRow orderType={orderType} />
 
-      <Footer />
-    </div>
+        <Section step="1" title="Which stage goes wrong, and where">
+          <RcaPanel orderType={orderType} />
+        </Section>
+
+        <Section
+          step="2"
+          title="Who to act on"
+          lede="The routes to renegotiate and the sellers to call."
+        >
+          <LaneTable orderType={orderType} />
+          <SellerPareto orderType={orderType} />
+        </Section>
+
+        <Section step="3" title="What it costs">
+          <ReviewImpact orderType={orderType} />
+        </Section>
+
+        <Section step="4" title="Explore the data">
+          <Explore orderType={orderType} />
+        </Section>
+
+        <Footer meta={meta} />
+      </main>
+    </>
   )
 }

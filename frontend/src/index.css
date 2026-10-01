@@ -97,10 +97,6 @@ td {
 }
 
 thead th {
-  position: sticky;
-  top: 0;
-  background: var(--surface);
-  z-index: 1;
   color: var(--ink-faint);
   font-weight: 500;
   font-size: 12px;
