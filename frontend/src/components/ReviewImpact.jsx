@@ -69,8 +69,8 @@ export function ReviewImpact({ orderType }) {
                 axisLine={false}
               />
               <Tooltip formatter={(v) => percent(v)} cursor={{ fill: 'var(--surface-sunk)' }} />
-              <Bar dataKey="On time" fill="var(--ontime)" radius={[3, 3, 0, 0]} />
-              <Bar dataKey="Late" fill="var(--late)" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="On time" fill="var(--ontime)" radius={[3, 3, 0, 0]} isAnimationActive={false} />
+              <Bar dataKey="Late" fill="var(--late)" radius={[3, 3, 0, 0]} isAnimationActive={false} />
             </BarChart>
           </ResponsiveContainer>
         </div>
