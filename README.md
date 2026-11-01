@@ -44,24 +44,27 @@ from Kaggle into `data/raw/` and run `python -m data.clean`.
 
 ## Dashboard
 
-The finding first: the headline numbers, the generated summary, and which stage
-of the journey fails.
+Four views, one question each, and the order type switch applies to all of them.
+The first answers which stage fails, with the typical on-time and late order drawn
+to scale against their promised dates.
 
 <p align="center">
-  <img src="docs/images/overview.png" alt="Headline numbers, the generated finding, and which stage fails" width="600">
+  <img src="docs/images/overview.png" alt="The share of late orders by stage, and the typical on-time and late order against the promise" width="600">
 </p>
 
-Then who to act on: the worst routes, and how few sellers carry half the late
-orders.
+Then where it breaks: a map of the 27 states, where choosing one opens its figures
+and its worst routes.
+
+<p align="center">
+  <img src="docs/images/where-it-breaks.png" alt="A tile map of Brazilian states shaded by late orders against volume, beside the file for Alagoas" width="600">
+</p>
+
+Then who to act on: the worst routes, how few sellers carry half the late orders,
+and the sellers with the lowest on-time rate. A fourth view shows every exclusion,
+the limits of the data, and the daily series and orders behind the figures.
 
 <p align="center">
   <img src="docs/images/who-to-act-on.png" alt="The worst routes by on-time rate, and the seller concentration" width="600">
-</p>
-
-And what lateness costs in review scores.
-
-<p align="center">
-  <img src="docs/images/what-it-costs.png" alt="Review scores for on-time and late orders" width="600">
 </p>
 
 ---
@@ -106,8 +109,8 @@ each order type separately.
 
 São Paulo holds 42% of all orders, so "most late orders are in São Paulo" would
 be true however well it performed. The useful comparison is each area's share of
-late orders against its share of all orders. **The Northeast takes 2.05× the late
-orders its volume would predict.** The North takes 1.39×, and the Southeast 0.85×.
+the late orders that ran over in carrier transit against its share of all orders.
+**The Northeast takes 2.05× what its volume would predict.** The North takes 1.39×, and the Southeast 0.85×.
 The worst states are Alagoas (3.4×), Maranhão (2.8×) and Ceará (2.3×).
 
 ### 5. A late order costs 1.75 review points

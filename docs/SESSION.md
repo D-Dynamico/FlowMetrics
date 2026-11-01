@@ -278,3 +278,46 @@ dashboard changes, recapture: `chrome --headless=new --window-size=1200,4200
 --force-device-scale-factor=1.5 --screenshot=full.png http://localhost:8000/`.
 The overview was then cut to end after the stage bar, and all three were reduced
 to 256 colours, taking them from 357 KB to 142 KB with no visible change.
+
+### Dashboard first screen, colours and loading states redone after a design review
+
+The first screen now answers the page's question: the largest figure is the
+carrier share of late orders, above the stage bar, built from the computed
+dominant leg so it follows the order type toggle. The generated headline stays in
+the API, the README and section 1, but at body size, which departs from the plan's
+"print it prominently". Each hue now means one thing: blue is only the carrier leg,
+amber only the seller leg, and daily volume is neutral. The Vite logo, `hero.png`
+and `icons.svg` are gone; the new mark is the three legs in sequence. Faint text now
+reaches 4.5:1, so the data credit is readable. Loading placeholders are flat, spaced
+and sized to the desktop blocks; on a phone they are still shorter than the real
+blocks. Also removed: the top bar's blur and toggle shadows. The title dropped
+"marketplace" to fit two lines on a phone. README screenshots were recaptured.
+
+### End of the daily on-time line removed, and the rest of the review finished
+
+The daily rate fell to 0% at the end of the series, and that was not real. Purchases
+stop on 2018-08-29, so later deliveries are only the slow orders left over. The rate
+is now blank after the last purchase and on days under `MIN_ORDERS_PER_DAY`, the
+chart says how many days, and a test holds it. Every other figure is unchanged.
+Volume and rate now sit on two charts sharing a time axis, not two scales on one
+plot. The footer's dates were purchase dates labelled as delivered, now corrected.
+The toggle keeps old figures dimmed until new ones land, instead of collapsing the
+page. The page widened to 1200px with routes and sellers side by side, and the
+segment note now uses the toggle's words.
+
+### Dashboard rebuilt as four views around the promise
+
+The one long page read as scattered blocks. It is now a sidebar and four views, one
+question each: the promise, where it breaks, who to act on, how it was measured. The
+order type switch sits in the sidebar and drives all four. Two pieces are specific
+to this data: the promise line draws the typical on-time and late order to scale
+against their promised dates, and a tile map of the 27 states opens a file for each.
+`promise_journey()` and `state_summary()` were added to `analysis/`, with
+`/api/journey`, `/api/states` and a `customer_state` filter on `/api/lanes`.
+The look follows one rule: the chrome is neutral, blue marks the leading stage and
+the map, red marks late. Geist is bundled through `@fontsource-variable/geist`, so
+nothing loads from a third party at runtime.
+Writing the state test showed that the state and region multiples (Alagoas 3.4×) are
+measured on the dominant leg only, not on all late orders (Alagoas 2.9×). The
+figures stand and the map uses them, but the old dashboard label and the README
+wording were imprecise, so both now state the real definition.
