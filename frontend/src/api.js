@@ -4,14 +4,25 @@ import { useEffect, useState } from 'react'
 // error states look the same everywhere and no component invents its own
 // fetching. Paths are relative, which works unchanged in development (Vite
 // proxies /api to uvicorn) and in the built app (FastAPI serves both).
+//
+// A new path keeps the old result on screen until the new one lands, so the toggle
+// does not collapse the page. The page dims while anything is in flight, so an old
+// figure is never read as the answer to the new selection.
+let inFlight = 0
+
+function markInFlight(change) {
+  inFlight += change
+  document.body.classList.toggle('refreshing', inFlight > 0)
+}
+
 export function useApi(path) {
   const [data, setData] = useState(null)
   const [error, setError] = useState(null)
 
   useEffect(() => {
     let cancelled = false
-    setData(null)
     setError(null)
+    markInFlight(1)
 
     fetch(path)
       .then((response) => {
@@ -22,8 +33,11 @@ export function useApi(path) {
         if (!cancelled) setData(json)
       })
       .catch((err) => {
-        if (!cancelled) setError(err.message)
+        if (cancelled) return
+        setData(null)
+        setError(err.message)
       })
+      .finally(() => markInFlight(-1))
 
     // Guards against a slow response for a previous order type landing after a
     // faster one for the current selection and overwriting it.

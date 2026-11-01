@@ -1,37 +1,33 @@
-/* Design tokens. One place to change spacing, colour and type, so eight blocks
-   stay consistent without a framework.
+@import '@fontsource-variable/geist/wght.css';
 
-   The look is deliberately plain: dense, quiet, and readable. This is an
-   operations tool, so the numbers should carry the page and the chrome around
-   them should be almost invisible. */
+/* Design tokens. One place to change spacing, colour and type.
+
+   The chrome holds no colour. Ink carries the page; the one blue marks the stage
+   that matters, red marks what was late, and anything else stays neutral, so a
+   coloured mark always means something. */
 :root {
-  /* Warm neutrals rather than blue-grey. Pure grey reads as a default nobody
-     chose; a hint of warmth reads as considered, at no cost in legibility. */
-  --bg: #f5f4f2;
+  /* A stone ground rather than a blue-grey: the colour of a cardboard parcel
+     taken nearly to white. */
+  --ground: #f4f3f1;
   --surface: #ffffff;
-  --surface-sunk: #faf9f7;
-  --border: #e5e3df;
-  --border-strong: #d6d3cd;
+  --raised: #eeedea;
+  --active: #e7e6e2;
+  --border: #e4e3df;
+  --rule: #efeeeb;
+  --control: #d2d1cc;
 
-  --ink: #1b1a18;
-  --ink-soft: #5f5c56;
-  --ink-faint: #93908a;
+  --text: #0d0d0c;
+  --muted: #62605b;
 
-  /* One accent. Everything else is neutral, so anything coloured is a signal. */
-  --accent: #2f56c8;
-  --accent-soft: #eef1fb;
-  --late: #b8433a;
-  --late-soft: #fbeeed;
-  --ontime: #2a7f5f;
-  --ontime-soft: #ecf5f1;
-  --warn: #a8722a;
-  --warn-soft: #fbf4e9;
+  --hue: #1d5fbf;
+  --late: #c4242a;
+  --late-pale: #f0b9b4;
 
-  --leg-approval: #c3bfb8;
-  --leg-seller: #c98a30;
-  --leg-carrier: #2f56c8;
+  --leg-approval: #d2d1cc;
+  --leg-seller: #6f6e69;
+  --chart-ink: #2b2a28;
+  --volume: #8a8984;
 
-  /* A 4px rhythm. Every margin and pad below is a multiple. */
   --s1: 4px;
   --s2: 8px;
   --s3: 12px;
@@ -40,15 +36,16 @@
   --s6: 32px;
   --s7: 48px;
 
-  --radius: 10px;
+  --radius: 8px;
+  --radius-control: 6px;
+  --sidebar: 248px;
 
   color-scheme: light;
-  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Inter, Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Geist Variable', Inter, system-ui, sans-serif;
   font-size: 14px;
-  line-height: 1.55;
-  color: var(--ink);
-  background: var(--bg);
+  line-height: 20px;
+  color: var(--text);
+  background: var(--ground);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -59,70 +56,58 @@
 
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--ground);
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+dl,
+dd {
+  margin: 0;
+  padding: 0;
 }
 
 h1,
 h2,
 h3 {
-  margin: 0;
-  font-weight: 600;
-  letter-spacing: -0.011em;
+  font-weight: 500;
 }
 
-p {
-  margin: 0;
-}
-
-/* Every figure on the page is tabular, so columns of numbers line up and a
-   value does not jitter when it changes. */
-.num,
-.value,
-.figure {
-  font-variant-numeric: tabular-nums;
+ul {
+  list-style: none;
 }
 
 table {
   border-collapse: collapse;
   width: 100%;
-  font-size: 13px;
 }
 
 th,
 td {
   text-align: left;
-  padding: var(--s2) var(--s3);
-  border-bottom: 1px solid var(--border);
   white-space: nowrap;
-}
-
-thead th {
-  color: var(--ink-faint);
-  font-weight: 500;
-  font-size: 12px;
-  border-bottom-color: var(--border-strong);
-}
-
-tbody tr:last-child td {
-  border-bottom: none;
-}
-
-tbody tr:hover td {
-  background: var(--surface-sunk);
-}
-
-td.num,
-th.num {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
 }
 
 button {
   font: inherit;
+  color: inherit;
   cursor: pointer;
 }
 
 a {
-  color: var(--ink-soft);
+  color: inherit;
   text-underline-offset: 2px;
+}
+
+code {
+  font-family: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+  font-size: 13px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 2px;
 }

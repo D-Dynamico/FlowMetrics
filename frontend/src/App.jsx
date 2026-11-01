@@ -1,12 +1,19 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import { useMeta, number, percent } from './api'
-import { KpiRow } from './components/KpiRow'
-import { RcaPanel } from './components/RcaPanel'
-import { LaneTable } from './components/LaneTable'
-import { SellerPareto } from './components/SellerPareto'
-import { ReviewImpact } from './components/ReviewImpact'
-import { Explore } from './components/Explore'
+import { PromiseView } from './components/PromiseView'
+import { WhereView } from './components/WhereView'
+import { ActView } from './components/ActView'
+import { EvidenceView } from './components/EvidenceView'
+
+// One question per view. The page used to run every block in one long scroll,
+// which left the reader to work out how the pieces related.
+const VIEWS = [
+  { key: 'promise', label: 'The promise', short: 'Promise', Component: PromiseView },
+  { key: 'where', label: 'Where it breaks', short: 'Where', Component: WhereView },
+  { key: 'act', label: 'Who to act on', short: 'Act on', Component: ActView },
+  { key: 'evidence', label: 'How it was measured', short: 'Method', Component: EvidenceView },
+]
 
 const SCOPES = [
   { key: 'all', label: 'All orders' },
@@ -14,146 +21,122 @@ const SCOPES = [
   { key: 'intrastate', label: 'Within one state' },
 ]
 
+const viewFromHash = () => {
+  const key = window.location.hash.slice(1)
+  return VIEWS.some((view) => view.key === key) ? key : 'promise'
+}
+
 // The toggle is not decorative. Switching it is how a reader sees that the two
-// segments fail for different reasons: between states the carrier stage
-// dominates, within one state the seller stage surfaces because there is no long
-// transit to absorb a slow handover. It sits in the sticky bar so it stays in
-// reach while reading any block below, all of which move together.
-function OrderTypeToggle({ value, onChange }) {
+// segments fail for different reasons: between states the carrier leg dominates,
+// within one state the seller leg surfaces because there is no long transit to
+// absorb a slow handover. It lives in the sidebar so it stays in reach on every
+// view, all of which move together.
+function ScopeSwitch({ value, onChange, counts }) {
   return (
-    <div className="segmented" role="group" aria-label="Order type">
+    <div className="scope" role="group" aria-label="Order type">
+      <p className="nav-label">Order type</p>
       {SCOPES.map((scope) => (
         <button
           key={scope.key}
           aria-pressed={value === scope.key}
           onClick={() => onChange(scope.key)}
         >
-          {scope.label}
+          <span>{scope.label}</span>
+          {counts?.[scope.key] != null && (
+            <span className="count">{number(counts[scope.key])}</span>
+          )}
         </button>
       ))}
     </div>
   )
 }
 
-function Section({ step, title, lede, children }) {
+function Sidebar({ view, orderType, onOrderType, meta }) {
+  const counts = meta && {
+    all: meta.orders,
+    interstate: meta.order_type_counts?.interstate,
+    intrastate: meta.order_type_counts?.intrastate,
+  }
+
   return (
-    <section className="section">
-      <div className="section-head">
-        <span className="step">{step}</span>
-        <div>
-          <h2>{title}</h2>
-          {lede && <p className="lede">{lede}</p>}
-        </div>
-      </div>
-      {children}
-    </section>
+    <aside className="sidebar">
+      <a className="brand" href="#promise">
+        <img src="./favicon.svg" alt="" width="24" height="24" />
+        <span>
+          FlowMetrics
+          <small>Olist delivery review</small>
+        </span>
+      </a>
+
+      <nav aria-label="Views">
+        {VIEWS.map((item) => (
+          <a
+            key={item.key}
+            href={`#${item.key}`}
+            aria-current={view === item.key ? 'page' : undefined}
+          >
+            <span className="long">{item.label}</span>
+            <span className="short">{item.short}</span>
+          </a>
+        ))}
+      </nav>
+
+      <ScopeSwitch value={orderType} onChange={onOrderType} counts={counts} />
+
+      <p className="byline">
+        A supply chain portfolio project by Dayanand.{' '}
+        <a href="https://github.com/D-Dynamico/FlowMetrics" target="_blank" rel="noreferrer">
+          Source on GitHub
+        </a>
+      </p>
+    </aside>
   )
 }
 
-// Every exclusion stays visible on the page: the totals in the summary line,
-// the per-rule counts one click away. Hiding them entirely would leave an
-// unexplained drop between the raw and the clean row counts.
+// Every exclusion stays one click away from every view, and the source is
+// credited wherever the data is shown.
 function Footer({ meta }) {
   if (!meta) return null
   const report = meta.cleaning_report || {}
   const source = meta.data_source || {}
 
-  const rules = [
-    ['Not yet delivered', report.dropped_not_delivered],
-    ['More than one seller', report.dropped_multi_seller],
-    ['Impossible timestamps (negative stage)', report.dropped_negative_duration],
-    ['Outside the date range', report.dropped_outside_date_window],
-    ['Missing a timestamp', report.dropped_null_timestamps],
-    ['Over 180 days end to end', report.dropped_impossible_tat],
-  ]
-
   return (
     <footer className="footer">
-      <p>
-        Data:{' '}
-        <a href={source.url} target="_blank" rel="noreferrer">
-          {source.name}
-        </a>
-        , {source.publisher}, {source.licence}. Real, anonymised orders delivered{' '}
-        {meta.date_range?.[0]} to {meta.date_range?.[1]}.
-      </p>
-      <details>
-        <summary>
-          {number(report.clean_orders)} of {number(report.raw_orders)} orders kept (
-          {percent(report.survival_rate, 0)}) — see what was excluded
-        </summary>
-        <table className="exclusions">
-          <tbody>
-            {rules.map(([label, count]) => (
-              <tr key={label}>
-                <td>{label}</td>
-                <td className="num">{number(count)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        <p className="fine">
-          Rankings ignore routes under {meta.floors?.min_orders_per_lane} orders and
-          sellers under {meta.floors?.min_orders_per_seller}, so a handful of orders
-          cannot top a list.
-        </p>
-      </details>
+      Data:{' '}
+      <a href={source.url} target="_blank" rel="noreferrer">
+        {source.name}
+      </a>
+      , {source.publisher}, {source.licence}. Orders bought {meta.date_range?.[0]} to{' '}
+      {meta.date_range?.[1]}. {number(report.clean_orders)} of {number(report.raw_orders)}{' '}
+      orders kept ({percent(report.survival_rate, 0)}):{' '}
+      <a href="#evidence">see what was excluded</a>.
     </footer>
   )
 }
 
 export default function App() {
+  const [view, setView] = useState(viewFromHash)
   const [orderType, setOrderType] = useState('all')
   const meta = useMeta()
 
+  useEffect(() => {
+    const onHash = () => {
+      setView(viewFromHash())
+      window.scrollTo(0, 0)
+    }
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+
+  const { Component } = VIEWS.find((item) => item.key === view)
+
   return (
-    <>
-      <header className="topbar">
-        <div className="topbar-inner">
-          <div className="brand">
-            <img src="./favicon.svg" alt="" width="20" height="20" />
-            FlowMetrics
-          </div>
-          <OrderTypeToggle value={orderType} onChange={setOrderType} />
-        </div>
-      </header>
-
-      <main className="page">
-        <div className="intro">
-          <h1>Where Brazilian marketplace deliveries lose their promised date</h1>
-          <p>
-            {meta ? number(meta.cleaning_report?.clean_orders) : '…'} delivered
-            orders, {meta?.date_range?.[0]?.slice(0, 4)}–
-            {meta?.date_range?.[1]?.slice(0, 4)}. Switch order type at the top to
-            compare deliveries between states with deliveries inside one state.
-          </p>
-        </div>
-
-        <KpiRow orderType={orderType} />
-
-        <Section step="1" title="Which stage goes wrong, and where">
-          <RcaPanel orderType={orderType} />
-        </Section>
-
-        <Section
-          step="2"
-          title="Who to act on"
-          lede="The routes to renegotiate and the sellers to call."
-        >
-          <LaneTable orderType={orderType} />
-          <SellerPareto orderType={orderType} />
-        </Section>
-
-        <Section step="3" title="What it costs">
-          <ReviewImpact orderType={orderType} />
-        </Section>
-
-        <Section step="4" title="Explore the data">
-          <Explore orderType={orderType} />
-        </Section>
-
+    <div className="shell">
+      <Sidebar view={view} orderType={orderType} onOrderType={setOrderType} meta={meta} />
+      <main className="canvas">
+        <Component orderType={orderType} meta={meta} />
         <Footer meta={meta} />
       </main>
-    </>
+    </div>
   )
 }

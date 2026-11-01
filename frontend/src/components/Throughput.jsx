@@ -1,6 +1,7 @@
 import {
   ResponsiveContainer,
-  ComposedChart,
+  AreaChart,
+  LineChart,
   Area,
   Line,
   XAxis,
@@ -11,83 +12,88 @@ import {
 import { useApi, useMeta, scopedPath, percent, number } from '../api'
 import { Skeleton, Failed, StateSelect } from './Panel'
 
-const AXIS = { fontSize: 11, fill: 'var(--ink-faint)' }
+const AXIS = { fontSize: 12, fill: 'var(--muted)' }
+const MARGIN = { top: 8, right: 4, bottom: 0, left: -18 }
+const CHARTS_HEIGHT = 356
 
-// Volume and on-time rate on one chart because neither reads alone: the same dip
-// during a volume spike is a capacity story, and on a normal day a process one.
+// Volume and on-time rate read together: the same dip during a volume spike is a
+// capacity story, and on a normal day a process one. They share a time axis and a
+// tooltip rather than one plot, because two scales on one plot invite comparing
+// the lines' heights, which mean nothing.
 export function Throughput({ orderType, state, onStateChange }) {
   const meta = useMeta()
   const path = state ? `/api/throughput?state=${state}` : '/api/throughput'
   const { data, error, loading } = useApi(scopedPath(path, orderType))
+  const hiddenDays = data?.series.filter((day) => day.adherence == null).length
 
   return (
     <>
       <div className="filters">
         <StateSelect value={state} onChange={onStateChange} meta={meta} />
-        <div className="legend">
-          <span>
-            <i style={{ background: 'var(--accent)' }} />
-            Orders delivered per day
-          </span>
-          <span>
-            <i style={{ background: 'var(--ontime)' }} />
-            On-time rate
-          </span>
-        </div>
       </div>
 
-      {loading && <Skeleton height={260} />}
+      {loading && <Skeleton height={CHARTS_HEIGHT} />}
       {error && <Failed error={error} />}
       {data && (
-        <div className="chart tall">
-          <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={data.series} margin={{ top: 8, right: 0, bottom: 0, left: -18 }}>
-              <CartesianGrid stroke="var(--border)" vertical={false} />
-              <XAxis
-                dataKey="delivered_date"
-                tick={AXIS}
-                tickLine={false}
-                axisLine={false}
-                minTickGap={64}
-                tickFormatter={(d) => d.slice(0, 7)}
-              />
-              <YAxis yAxisId="left" tick={AXIS} tickLine={false} axisLine={false} />
-              <YAxis
-                yAxisId="right"
-                orientation="right"
-                domain={[0, 1]}
-                ticks={[0, 0.5, 1]}
-                tickFormatter={(v) => `${Math.round(v * 100)}%`}
-                tick={AXIS}
-                tickLine={false}
-                axisLine={false}
-              />
-              <Tooltip
-                formatter={(value, name) =>
-                  name === 'adherence' ? [percent(value), 'On time'] : [number(value), 'Orders']
-                }
-              />
-              <Area
-                yAxisId="left"
-                dataKey="orders"
-                stroke="var(--accent)"
-                fill="var(--accent)"
-                fillOpacity={0.1}
-                strokeWidth={1.25}
-                isAnimationActive={false}
-              />
-              <Line
-                yAxisId="right"
-                dataKey="adherence"
-                stroke="var(--ontime)"
-                strokeWidth={1}
-                dot={false}
-                opacity={0.7}
-                isAnimationActive={false}
-              />
-            </ComposedChart>
-          </ResponsiveContainer>
-        </div>
+        <>
+          <div className="subhead">Orders delivered per day</div>
+          <div className="chart">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={data.series} syncId="daily" margin={MARGIN}>
+                <CartesianGrid stroke="var(--border)" vertical={false} />
+                <XAxis dataKey="delivered_date" hide />
+                <YAxis tick={AXIS} tickLine={false} axisLine={false} tickCount={3} />
+                <Tooltip formatter={(value) => [number(value), 'Orders']} />
+                <Area
+                  dataKey="orders"
+                  stroke="var(--volume)"
+                  fill="var(--volume)"
+                  fillOpacity={0.14}
+                  strokeWidth={1.25}
+                  isAnimationActive={false}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="subhead">On-time rate per day</div>
+          <div className="chart">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={data.series} syncId="daily" margin={MARGIN}>
+                <CartesianGrid stroke="var(--border)" vertical={false} />
+                <XAxis
+                  dataKey="delivered_date"
+                  tick={AXIS}
+                  tickLine={false}
+                  axisLine={false}
+                  minTickGap={64}
+                  tickFormatter={(d) => d.slice(0, 7)}
+                />
+                <YAxis
+                  domain={[0, 1]}
+                  ticks={[0, 0.5, 1]}
+                  tickFormatter={(v) => `${Math.round(v * 100)}%`}
+                  tick={AXIS}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <Tooltip formatter={(value) => [percent(value), 'On time']} />
+                <Line
+                  dataKey="adherence"
+                  stroke="var(--chart-ink)"
+                  strokeWidth={1.25}
+                  dot={false}
+                  isAnimationActive={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+          <p className="fine">
+            No rate on {number(hiddenDays)} of {number(data.series.length)} days: those
+            under {data.min_orders_per_day} orders, and those after the last purchase in
+            the data, when only slow orders are still arriving.
+          </p>
+        </>
       )}
     </>
   )

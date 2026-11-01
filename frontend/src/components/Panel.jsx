@@ -1,13 +1,13 @@
 // Shared shell for every block, so loading and error states are handled once
 // rather than eight times, and a failed fetch never renders an empty chart that
 // looks like a finding of zero.
-export function Panel({ title, note, actions, feature = false, children }) {
+export function Panel({ title, note, actions, children }) {
   return (
-    <div className={feature ? 'panel feature' : 'panel'}>
+    <div className="panel">
       {(title || note || actions) && (
         <header>
           <div>
-            {title && <h3>{title}</h3>}
+            {title && <h2>{title}</h2>}
             {note && <span className="note">{note}</span>}
           </div>
           {actions}
@@ -18,10 +18,27 @@ export function Panel({ title, note, actions, feature = false, children }) {
   )
 }
 
-// A placeholder the size of the block it stands in for, so switching order type
-// does not make the page jump while data loads.
-export function Skeleton({ height = 160 }) {
-  return <div className="skeleton" style={{ height }} aria-label="Loading" />
+// Each view is named for a noun or the question it answers, with one line on the
+// data under it.
+export function ViewTitle({ title, note }) {
+  return (
+    <div className="view-title">
+      <h1>{title}</h1>
+      {note && <p>{note}</p>}
+    </div>
+  )
+}
+
+// A placeholder the size of the block it stands in for on first load, at desktop
+// and phone width, so the page does not jump when the data arrives.
+export function Skeleton({ height = 160, phone = height }) {
+  return (
+    <div
+      className="skeleton"
+      style={{ '--height': `${height}px`, '--height-phone': `${phone}px` }}
+      aria-label="Loading"
+    />
+  )
 }
 
 // Built from /api/meta rather than a hardcoded list, so the options are exactly
