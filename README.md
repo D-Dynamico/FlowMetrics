@@ -49,7 +49,7 @@ The first answers which stage fails, with the typical on-time and late order dra
 to scale against their promised dates.
 
 <p align="center">
-  <img src="docs/images/overview.png" alt="The share of late orders by stage, and the typical on-time and late order against the promise" width="600">
+  <img src="docs/images/the-promise.png" alt="The share of late orders by stage, and the typical on-time and late order against the promise" width="600">
 </p>
 
 Then where it breaks: a map of the 27 states, where choosing one opens its figures
@@ -64,7 +64,7 @@ and the sellers with the lowest on-time rate. A fourth view shows every exclusio
 the limits of the data, and the daily series and orders behind the figures.
 
 <p align="center">
-  <img src="docs/images/who-to-act-on.png" alt="The worst routes by on-time rate, and the seller concentration" width="600">
+  <img src="docs/images/routes-and-sellers.png" alt="The worst routes by on-time rate, and the seller concentration" width="600">
 </p>
 
 ---
