@@ -313,6 +313,11 @@ def _headline(df: pd.DataFrame, overall: dict, slack: dict) -> str:
     )
 
 
+# The same words as the dashboard's order type toggle, since this note sits
+# beneath it.
+ORDER_TYPE_LABELS = {"interstate": "Between states", "intrastate": "Within one state"}
+
+
 def _segment_note(by_order_type: dict, df: pd.DataFrame) -> str:
     """State how the two segments diverge, from computed values."""
     parts = []
@@ -322,11 +327,12 @@ def _segment_note(by_order_type: dict, df: pd.DataFrame) -> str:
         subset = df[df["order_type"] == order_type]
         leg = findings["dominant_leg"]
         parts.append(
-            f"{order_type} runs {1 - subset['is_late'].mean():.1%} adherence with "
-            f"{findings['leg_breakdown'][leg]:.0%} of misses on the "
-            f"{LEG_LABELS[leg]} leg"
+            f"{ORDER_TYPE_LABELS[order_type]}, "
+            f"{1 - subset['is_late'].mean():.1%} arrive on time and "
+            f"{findings['leg_breakdown'][leg]:.0%} of late orders ran furthest over "
+            f"in {LEG_LABELS[leg]}."
         )
-    return "; ".join(parts) + "."
+    return " ".join(parts)
 
 
 CAUSAL_CAVEAT = (

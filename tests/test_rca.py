@@ -185,3 +185,41 @@ def test_causal_caveat_is_present_and_avoids_causal_language(rca):
         lowered = text.lower()
         for banned in ["causes", "caused by", "because of", "drives"]:
             assert banned not in lowered
+
+
+def test_daily_rate_is_blank_where_it_cannot_be_read(orders):
+    """Thin days and days after the last purchase must not show a rate.
+
+    After purchases stop only slow orders are still arriving, so those days read
+    as a collapse in on-time delivery that never happened. Volume stays visible.
+    """
+    from analysis.kpis import throughput
+
+    series = throughput(orders)
+    dates = pd.to_datetime(series["delivered_date"])
+    last_purchase = pd.to_datetime(orders["order_purchase_timestamp"]).max().normalize()
+
+    assert series.loc[dates > last_purchase, "adherence"].isna().all()
+    assert series.loc[series["orders"] < cfg.MIN_ORDERS_PER_DAY, "adherence"].isna().all()
+    assert series["orders"].sum() == len(orders)
+
+
+def test_journey_late_orders_arrive_after_their_promise(orders):
+    """The two typical orders must sit either side of the promised date."""
+    journey = kpis.promise_journey(orders)
+
+    assert journey["on_time"]["gap_days"] < 0 < journey["late"]["gap_days"]
+    assert journey["on_time"]["orders"] + journey["late"]["orders"] == len(orders)
+    assert journey["late"]["carrier_days"] > journey["on_time"]["carrier_days"]
+
+
+def test_state_summary_covers_every_order_and_agrees_with_the_rca(orders, rca):
+    """The map and the root cause analysis must not disagree about a state."""
+    states = kpis.state_summary(orders)
+
+    assert sum(row["orders"] for row in states) == len(orders)
+    assert sum(row["late_orders"] for row in states) == rca["late_count"]
+    for row in states:
+        lift = rca["overall"]["state_lift"].get(row["customer_state"])
+        if lift:
+            assert lift["orders"] == row["orders"]

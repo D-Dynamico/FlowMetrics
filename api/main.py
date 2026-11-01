@@ -120,7 +120,30 @@ def get_throughput(
     """Daily delivered volume with same-day adherence, optionally for one state."""
     series = kpis.throughput(_scoped(order_type), state=state)
     series = series.assign(delivered_date=series["delivered_date"].astype(str))
-    return _json_safe({"series": series.to_dict("records"), "state": state})
+    return _json_safe(
+        {
+            "series": series.to_dict("records"),
+            "state": state,
+            "min_orders_per_day": cfg.MIN_ORDERS_PER_DAY,
+        }
+    )
+
+
+@app.get("/api/journey")
+def get_journey(order_type: str | None = Query(None)) -> dict:
+    """The typical on-time and late order, in days from purchase."""
+    return _json_safe(kpis.promise_journey(_scoped(order_type)))
+
+
+@app.get("/api/states")
+def get_states(order_type: str | None = Query(None)) -> dict:
+    """Every customer state, for the map and the state file."""
+    return _json_safe(
+        {
+            "states": kpis.state_summary(_scoped(order_type)),
+            "min_orders": cfg.MIN_ORDERS_PER_LANE,
+        }
+    )
 
 
 @app.get("/api/rca")
@@ -187,6 +210,7 @@ def get_lanes(
     order_type: str | None = Query(None),
     sort_by: str = Query("adherence", pattern="^(adherence|late_orders)$"),
     limit: int = Query(50, ge=1, le=500),
+    customer_state: str | None = Query(None),
 ) -> dict:
     """Lane table, sortable by worst adherence or by largest absolute loss.
 
@@ -195,6 +219,8 @@ def get_lanes(
     may cost more customers in total.
     """
     scoped = _scoped(order_type)
+    if customer_state:
+        scoped = scoped[scoped["customer_state"] == customer_state]
     return _json_safe(
         {
             "lanes": lanes.rank_lanes(scoped, by=sort_by, top=limit),

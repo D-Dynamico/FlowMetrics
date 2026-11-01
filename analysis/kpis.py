@@ -7,6 +7,7 @@ compute a metric two different ways and quietly disagree.
 
 from __future__ import annotations
 
+import numpy as np
 import pandas as pd
 
 import config as cfg
@@ -174,6 +175,11 @@ def throughput(df: pd.DataFrame, state: str | None = None) -> pd.DataFrame:
     Volume context, without which an adherence dip cannot be read: the same dip
     during a volume spike is a capacity story and on a normal day it is a process
     story.
+
+    The rate is left empty on days it cannot be read. After the last purchase in
+    the window, the only orders still arriving are the slow ones, so those days
+    fall towards 0% on time from selection alone. Days under the volume floor
+    swing on a single order.
     """
     scoped = df if state is None else df[df["customer_state"] == state]
     series = scoped.groupby("delivered_date").agg(
@@ -181,7 +187,62 @@ def throughput(df: pd.DataFrame, state: str | None = None) -> pd.DataFrame:
         late_orders=("is_late", "sum"),
     )
     series["adherence"] = 1 - series["late_orders"] / series["orders"]
+
+    last_purchase = pd.to_datetime(df["order_purchase_timestamp"]).max().normalize()
+    unreadable = (series["orders"] < cfg.MIN_ORDERS_PER_DAY) | (
+        pd.to_datetime(series.index) > last_purchase
+    )
+    series.loc[unreadable, "adherence"] = np.nan
     return series.reset_index().sort_values("delivered_date")
+
+
+def promise_journey(df: pd.DataFrame) -> dict:
+    """The typical on-time and late order, in days from purchase.
+
+    Each figure is its own median, so the stages do not add up exactly to the
+    arrival day, and promised minus arrival does not exactly equal the median gap.
+    Medians are used because the late tail would drag means well past anything a
+    typical order experiences.
+    """
+    purchased = pd.to_datetime(df["order_purchase_timestamp"])
+    delivered = pd.to_datetime(df["order_delivered_customer_date"])
+    promised = pd.to_datetime(df["order_estimated_delivery_date"])
+    day = pd.Timedelta(days=1)
+
+    def typical(group: pd.DataFrame) -> dict | None:
+        if group.empty:
+            return None
+        index = group.index
+        return {
+            "orders": int(len(group)),
+            "approval_days": round(float(group["approval_leg_hrs"].median()) / 24, 2),
+            "seller_days": round(float(group["seller_leg_hrs"].median()) / 24, 2),
+            "carrier_days": round(float(group["carrier_leg_hrs"].median()) / 24, 2),
+            "arrival_day": round(float(((delivered[index] - purchased[index]) / day).median()), 2),
+            "promised_day": round(float(((promised[index] - purchased[index]) / day).median()), 2),
+            "gap_days": round(float(((delivered[index] - promised[index]) / day).median()), 2),
+        }
+
+    return {"on_time": typical(df[~df["is_late"]]), "late": typical(df[df["is_late"]])}
+
+
+def state_summary(df: pd.DataFrame) -> list[dict]:
+    """One row per customer state: volume, on-time rate and carrier time.
+
+    The over-share figure is not here: it belongs to the root cause analysis,
+    which measures it on the dominant leg only, and a second definition would
+    disagree with the headline. The floor travels with the row rather than
+    removing it, so every state stays on the map and a thin one reads as thin.
+    """
+    table = df.groupby("customer_state", observed=True).agg(
+        orders=("is_late", "size"),
+        late_orders=("is_late", "sum"),
+        median_carrier_hrs=("carrier_leg_hrs", "median"),
+        median_distance_km=("distance_km", "median"),
+    )
+    table["adherence"] = 1 - table["late_orders"] / table["orders"]
+    table["enough_orders"] = table["orders"] >= cfg.MIN_ORDERS_PER_LANE
+    return table.reset_index().to_dict("records")
 
 
 def review_impact(df: pd.DataFrame) -> dict:

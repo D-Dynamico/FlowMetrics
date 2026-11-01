@@ -145,6 +145,10 @@ MIN_ORDERS_PER_SELLER = 20
 # both decided by fewer than fifty orders, which is noise presented as a finding.
 MIN_ORDERS_PER_CATEGORY = 200
 
+# Below this, one order swings a day's on-time rate between 0% and 100%, so the
+# daily series shows the volume and no rate. The orders stay in every other figure.
+MIN_ORDERS_PER_DAY = 10
+
 # Share of misses a Pareto cut reports against.
 PARETO_THRESHOLDS = (0.5, 0.8)
 
